@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>
+			Hurricane Harvey Aug 2017
+		</title>
+		<!-- arcgis api -->
+		<link rel="stylesheet" href="https://js.arcgis.com/4.17/esri/themes/light/main.css" />
+		<script src="https://js.arcgis.com/4.17/"></script>
+		<style>
+			html,
+			body {
+				padding: 0;
+				margin: 0;
+				height: 100%;
+				width: 100%;
+			}
+
+			#viewDiv {
+				padding: 0;
+				margin: 0;
+				height: 100%;
+				width: 100%;
+				float: left;
+			}
+		</style>
+	</head>
+
+	<body>
+		<!-- Map -->
+		<div id="viewDiv"></div>
+
+		<script>
+			require([
+				"esri/Map",
+				"esri/views/MapView",
+				"esri/widgets/BasemapGallery",
+				"esri/layers/FeatureLayer",
+				"esri/layers/TileLayer",
+				"esri/layers/WMTSLayer",
+				"esri/layers/GroupLayer",
+				"esri/widgets/LayerList",
+				"esri/widgets/Legend",
+				"esri/widgets/Expand",
+				"esri/renderers/ClassBreaksRenderer"
+			], function(
+				Map,
+				MapView,
+				BasemapGallery,
+				FeatureLayer,
+				TileLayer,
+				WMTSLayer,
+				GroupLayer,
+				LayerList,
+				Legend,
+				Expand,
+				ClassBreaksRenderer
+			) {
+				const map = new Map({
+					basemap: "topo-vector"
+				});
+
+				const view = new MapView({
+					container: "viewDiv",
+					map: map,
+					center: [-95.3, 29.8], // longitude, latitude
+					zoom: 10
+				});
+
+				// Layers
+				
+				// SVI 2018 -------------------------------------
+				const sym1 = {
+					type: "simple-fill",
+					color: "#E6EECF",
+					style: "solid",
+					outline: {
+						width: 0.2,
+						color: "#6E6E6E"
+					}
+				};
+				const sym2 = {
+					type: "simple-fill",
+					color: "#9BC4C1",
+					style: "solid",
+					outline: {
+						width: 0.2,
+						color: "#6E6E6E"
+					}
+				};
+				const sym3 = {
+					type: "simple-fill",
+					color: "#69A8B7",
+					style: "solid",
+					outline: {
+						width: 0.2,
+						color: "#6E6E6E"
+					}
+				};
+				const sym4 = {
+					type: "simple-fill",
+					color: "#4B7E98",
+					style: "solid",
+					outline: {
+						width: 0.2,
+						color: "#6E6E6E"
+					}
+				};
+				const sym5 = {
+					type: "simple-fill",
+					color: "#2E557A",
+					style: "solid",
+					outline: {
+						width: 0.2,
+						color: "#6E6E6E"
+					}
+				};
+				const break_renderer_info = [{
+						// minValue: 0,
+						maxValue: -999,
+						symbol: sym1,
+						label: "-999.0000"
+					}, {
+						minValue: -998.9999,
+						maxValue: 0.25,
+						symbol: sym2,
+						label: "-998.9999 - 0.2500"
+					}, {
+						minValue: 0.2501,
+						maxValue: 0.5001,
+						symbol: sym3,
+						label: "0.2501 - 0.5001"
+					}, {
+						minValue: 0.5002,
+						maxValue: 0.7501,
+						symbol: sym4,
+						label: "0.5002 - 0.7501"
+					}, {
+						minValue: 0.5002,
+						maxValue: 1,
+						symbol: sym5,
+						label: "0.7502 - 1.0000"
+					}]
+					
+				
+				let RPL_THEME1_renderer = new ClassBreaksRenderer({
+					type: "class-breaks",
+					field: "RPL_THEME1",
+					classBreakInfos: break_renderer_info
+				});
+				let RPL_THEME2_renderer = new ClassBreaksRenderer({
+					type: "class-breaks",
+					field: "RPL_THEME2",
+					classBreakInfos: break_renderer_info
+				});
+				let RPL_THEME3_renderer = new ClassBreaksRenderer({
+					type: "class-breaks",
+					field: "RPL_THEME3",
+					classBreakInfos: break_renderer_info
+				});
+				let RPL_THEME4_renderer = new ClassBreaksRenderer({
+					type: "class-breaks",
+					field: "RPL_THEME4",
+					classBreakInfos: break_renderer_info
+				});
+
+
+				let SVI_2018_RPL_THEME1 = new FeatureLayer({
+					url: "https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/SVI2018_TEXAS_tract/FeatureServer",
+					renderer: RPL_THEME1_renderer,
+					title: "Socioeconomic"
+				});
+				let SVI_2018_RPL_THEME2 = new FeatureLayer({
+					url: "https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/SVI2018_TEXAS_tract/FeatureServer",
+					renderer: RPL_THEME2_renderer,
+					title: "Household Composition & Disability"
+				});
+				let SVI_2018_RPL_THEME3 = new FeatureLayer({
+					url: "https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/SVI2018_TEXAS_tract/FeatureServer",
+					renderer: RPL_THEME3_renderer,
+					title: "Minority Status & Language"
+				});
+				let SVI_2018_RPL_THEME4 = new FeatureLayer({
+					url: "https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/SVI2018_TEXAS_tract/FeatureServer",
+					renderer: RPL_THEME4_renderer,
+					title: "Housing Type & Transportation"
+				});
+				
+				const SVI_2018 = new GroupLayer({
+					title: "CDC Social Vulnerability Index",
+					visible: false,
+					layers: [
+						SVI_2018_RPL_THEME4,SVI_2018_RPL_THEME3,SVI_2018_RPL_THEME2,SVI_2018_RPL_THEME1
+					]
+				});
+
+
+				// Harris damage -------------------------------------
+				const layer_HCADParcels2017 = new TileLayer({
+					url: "https://tiles.arcgis.com/tiles/b3fMqPOmotX6SV4k/arcgis/rest/services/HCAD_Parcels_2017/MapServer",
+					listMode: "hide-children"
+					// legendEnabled : false
+				});
+				const layer_HCADCommercialDamaged = new FeatureLayer({
+					url: "https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/Harris/FeatureServer/48"
+				});
+				const layer_HCADResidentialDamaged = new FeatureLayer({
+					url: "https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/Harris/FeatureServer/49"
+				});
+				const harrisGroupLayer = new GroupLayer({
+					title: "Harris Damage Layers",
+					visible: true,
+					layers: [layer_HCADResidentialDamaged, layer_HCADCommercialDamaged, layer_HCADParcels2017],
+					// opacity: 0.75
+				});
+
+				// NOAA Harvey Imagery
+				const aug27a_ob = new WMTSLayer({
+					url: "https://storms.ngs.noaa.gov/storms/tilesd/services/tileserver.php/wmts",
+					activeLayer: {
+						id: "20170827-rgb"
+					},
+					title: "August 27 2017"
+				});
+				const aug28a_ob = new WMTSLayer({
+					url: "https://storms.ngs.noaa.gov/storms/tilesd/services/tileserver.php/wmts",
+					activeLayer: {
+						id: "20170828a-rgb"
+					},
+					title: "August 28 2017 Flight 1"
+				});
+				const aug28b_ob = new WMTSLayer({
+					url: "https://storms.ngs.noaa.gov/storms/tilesd/services/tileserver.php/wmts",
+					activeLayer: {
+						id: "20170828b-rgb"
+					},
+					title: "August 28 2017 Flight 2"
+				});
+				const aug29a_ob = new WMTSLayer({
+					url: "https://storms.ngs.noaa.gov/storms/tilesd/services/tileserver.php/wmts",
+					activeLayer: {
+						id: "20170829a-rgb"
+					},
+					title: "August 29 2017 oblique"
+				});
+				const aug29b_ob = new WMTSLayer({
+					url: "https://storms.ngs.noaa.gov/storms/tilesd/services/tileserver.php/wmts",
+					activeLayer: {
+						id: "20170829b-rgb"
+					},
+					title: "August 29 2017 nadir"
+				});
+				const aug30a_ob = new WMTSLayer({
+					url: "https://storms.ngs.noaa.gov/storms/tilesd/services/tileserver.php/wmts",
+					activeLayer: {
+						id: "20170830-rgb"
+					},
+					title: "August 30 2017"
+				});
+				const aug31a_ob = new WMTSLayer({
+					url: "https://storms.ngs.noaa.gov/storms/tilesd/services/tileserver.php/wmts",
+					activeLayer: {
+						id: "20170831a-rgb"
+					},
+					title: "August 31 2017 Flight 1"
+				});
+				const aug31b_ob = new WMTSLayer({
+					url: "https://storms.ngs.noaa.gov/storms/tilesd/services/tileserver.php/wmts",
+					activeLayer: {
+						id: "20170831b-rgb"
+					},
+					title: "August 31 2017 Flight 2"
+				});
+
+				const sept01a_ob = new WMTSLayer({
+					url: "https://storms.ngs.noaa.gov/storms/tilesd/services/tileserver.php/wmts",
+					activeLayer: {
+						id: "20170901a-rgb"
+					},
+					title: "September 01 2017 Flight 1"
+				});
+				const sept01b_ob = new WMTSLayer({
+					url: "https://storms.ngs.noaa.gov/storms/tilesd/services/tileserver.php/wmts",
+					activeLayer: {
+						id: "20170901b-rgb"
+					},
+					title: "September 01 2017 Flight 2"
+				});
+				const sept01c_ob = new WMTSLayer({
+					url: "https://storms.ngs.noaa.gov/storms/tilesd/services/tileserver.php/wmts",
+					activeLayer: {
+						id: "20170901c-rgb"
+					},
+					title: "September 01 2017 Flight 3"
+				});
+
+				const sept02a_ob = new WMTSLayer({
+					url: "https://storms.ngs.noaa.gov/storms/tilesd/services/tileserver.php/wmts",
+					activeLayer: {
+						id: "20170902a-rgb"
+					},
+					title: "September 02 2017 Flight 1"
+				});
+				const sept02b_ob = new WMTSLayer({
+					url: "https://storms.ngs.noaa.gov/storms/tilesd/services/tileserver.php/wmts",
+					activeLayer: {
+						id: "20170902b-rgb"
+					},
+					title: "September 02 2017 Flight 2"
+				});
+				const sept02c_ob = new WMTSLayer({
+					url: "https://storms.ngs.noaa.gov/storms/tilesd/services/tileserver.php/wmts",
+					activeLayer: {
+						id: "20170902c-rgb"
+					},
+					title: "September 02 2017 Flight 3"
+				});
+				const sept03a_ob = new WMTSLayer({
+					url: "https://storms.ngs.noaa.gov/storms/tilesd/services/tileserver.php/wmts",
+					activeLayer: {
+						id: "20170903a-rgb"
+					},
+					title: "September 03 2017"
+				});
+				const NOAA_harvey_imagery = new GroupLayer({
+					title: "NOAA Hurricane Harvey Imagery",
+					visible: false,
+					layers: [
+						sept03a_ob, sept02c_ob, sept02b_ob, sept02a_ob, sept01c_ob, sept01b_ob, sept01a_ob,
+						aug31b_ob, aug31a_ob, aug30a_ob, aug29b_ob, aug29a_ob, aug28b_ob, aug28a_ob,
+						aug27a_ob
+					]
+				});
+
+
+				//add layers to map
+				map.add(NOAA_harvey_imagery)
+				map.add(SVI_2018)
+				map.add(harrisGroupLayer)
+
+
+				// Add BasemapGallery -------------------------------
+				const basemapGallery = new BasemapGallery({
+					view: view,
+					container: document.createElement("div")
+				});
+
+				// Create an Expand instance and set the content
+				// property to the DOM node of the basemap gallery widget
+				const bgExpand = new Expand({
+					view: view,
+					content: basemapGallery
+				});
+
+				// Add the expand instance to the ui
+				view.ui.add(bgExpand, "top-left");
+
+				// Add LayerList & Legend widget ----------------------
+				view.ui.add(new LayerList({
+					view: view
+				}), "bottom-right");
+
+				view.ui.add(new Legend({
+					view: view
+				}), "bottom-left");
+
+				// combine them together
+				// const layerList = new LayerList({
+				// 	view: view,
+				// 	listItemCreatedFunction: (event) => {
+				// 		const item = event.item;
+				// 		if (item.layer.type != "group") {
+				// 			// don't show legend twice
+				// 			item.panel = {
+				// 				content: "legend",
+				// 				open: true
+				// 			};
+				// 		}
+				// 	}
+				// });
+				// view.ui.add(layerList, "bottom-left");
+			});
+		</script>
+	</body>
+</html>

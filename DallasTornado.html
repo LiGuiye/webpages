@@ -1,0 +1,289 @@
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no" />
+		<title>
+			Tornado
+		</title>
+
+		<link rel="stylesheet" href="https://js.arcgis.com/4.19/esri/themes/light/main.css" />
+
+		<style>
+			html,
+			body,
+			#viewDiv {
+				padding: 0;
+				margin: 0;
+				height: 100%;
+				width: 100%;
+				overflow: hidden;
+			}
+		</style>
+
+		<script src="https://js.arcgis.com/4.19/"></script>
+
+		<script>
+			require(["esri/widgets/LayerList",
+				"esri/Map",
+				"esri/views/MapView",
+				"esri/widgets/BasemapGallery",
+				"esri/layers/FeatureLayer",
+				"esri/widgets/Legend",
+				"esri/layers/TileLayer",
+				"esri/layers/GroupLayer",
+				"esri/widgets/Popup",
+				"esri/layers/support/LabelClass",
+				"esri/widgets/Expand",
+				"esri/renderers/ClassBreaksRenderer"
+			], function(
+				LayerList,
+				Map,
+				MapView,
+				BasemapGallery,
+				FeatureLayer,
+				Legend,
+				TileLayer,
+				GroupLayer,
+				Popup,
+				LabelClass,
+				Expand,
+				ClassBreaksRenderer
+			) {
+
+				const map = new Map({
+					basemap: "topo-vector"
+				});
+
+				const view = new MapView({
+					container: "viewDiv",
+					map: map,
+					center: [-96.81758, 32.915744], // longitude, latitude
+					zoom: 12
+				});
+
+				// Layers
+				const parcel_damage = new TileLayer({
+					// ttu
+					// url: "https://tiles.arcgis.com/tiles/4aUxCaDLaSFPHO9o/arcgis/rest/services/Dallas_Parcel_and_Damage2020_Tile/MapServer",
+					// cu boulder
+					url: "https://tiles.arcgis.com/tiles/b3fMqPOmotX6SV4k/arcgis/rest/services/Dallas_Parcel_and_Damage2020/MapServer",
+					title: "Dallas Parcel and Damage 2020",
+					listMode: "hide-children"
+				});
+				
+				// SVI 2018 -------------------------------------
+				const sym1 = {
+					type: "simple-fill",
+					color: "#E6EECF",
+					style: "solid",
+					outline: {
+						width: 0.2,
+						color: "#6E6E6E"
+					}
+				};
+				const sym2 = {
+					type: "simple-fill",
+					color: "#9BC4C1",
+					style: "solid",
+					outline: {
+						width: 0.2,
+						color: "#6E6E6E"
+					}
+				};
+				const sym3 = {
+					type: "simple-fill",
+					color: "#69A8B7",
+					style: "solid",
+					outline: {
+						width: 0.2,
+						color: "#6E6E6E"
+					}
+				};
+				const sym4 = {
+					type: "simple-fill",
+					color: "#4B7E98",
+					style: "solid",
+					outline: {
+						width: 0.2,
+						color: "#6E6E6E"
+					}
+				};
+				const sym5 = {
+					type: "simple-fill",
+					color: "#2E557A",
+					style: "solid",
+					outline: {
+						width: 0.2,
+						color: "#6E6E6E"
+					}
+				};
+				const break_renderer_info = [{
+						// minValue: 0,
+						maxValue: -999,
+						symbol: sym1,
+						label: "-999.0000"
+					}, {
+						minValue: -998.9999,
+						maxValue: 0.25,
+						symbol: sym2,
+						label: "-998.9999 - 0.2500"
+					}, {
+						minValue: 0.2501,
+						maxValue: 0.5001,
+						symbol: sym3,
+						label: "0.2501 - 0.5001"
+					}, {
+						minValue: 0.5002,
+						maxValue: 0.7501,
+						symbol: sym4,
+						label: "0.5002 - 0.7501"
+					}, {
+						minValue: 0.5002,
+						maxValue: 1,
+						symbol: sym5,
+						label: "0.7502 - 1.0000"
+					}]
+					
+				
+				let RPL_THEME1_renderer = new ClassBreaksRenderer({
+					type: "class-breaks",
+					field: "RPL_THEME1",
+					classBreakInfos: break_renderer_info
+				});
+				let RPL_THEME2_renderer = new ClassBreaksRenderer({
+					type: "class-breaks",
+					field: "RPL_THEME2",
+					classBreakInfos: break_renderer_info
+				});
+				let RPL_THEME3_renderer = new ClassBreaksRenderer({
+					type: "class-breaks",
+					field: "RPL_THEME3",
+					classBreakInfos: break_renderer_info
+				});
+				let RPL_THEME4_renderer = new ClassBreaksRenderer({
+					type: "class-breaks",
+					field: "RPL_THEME4",
+					classBreakInfos: break_renderer_info
+				});
+				
+				
+				let SVI_2018_RPL_THEME1 = new FeatureLayer({
+					url: "https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/SVI2018_TEXAS_tract/FeatureServer",
+					renderer: RPL_THEME1_renderer,
+					title: "Socioeconomic"
+				});
+				let SVI_2018_RPL_THEME2 = new FeatureLayer({
+					url: "https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/SVI2018_TEXAS_tract/FeatureServer",
+					renderer: RPL_THEME2_renderer,
+					title: "Household Composition & Disability"
+				});
+				let SVI_2018_RPL_THEME3 = new FeatureLayer({
+					url: "https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/SVI2018_TEXAS_tract/FeatureServer",
+					renderer: RPL_THEME3_renderer,
+					title: "Minority Status & Language"
+				});
+				let SVI_2018_RPL_THEME4 = new FeatureLayer({
+					url: "https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/SVI2018_TEXAS_tract/FeatureServer",
+					renderer: RPL_THEME4_renderer,
+					title: "Housing Type & Transportation"
+				});
+				
+				const SVI_2018 = new GroupLayer({
+					title: "CDC Social Vulnerability Index",
+					visible: false,
+					layers: [
+						SVI_2018_RPL_THEME4,SVI_2018_RPL_THEME3,SVI_2018_RPL_THEME2,SVI_2018_RPL_THEME1
+					]
+				});
+				
+				// kml Tornado Trajectory -------------------------------------
+				const template = {
+					title: "{NAME}",
+					content: "{PopupInfo}"
+				};
+				
+				const statesLabelClass = new LabelClass({
+					labelExpressionInfo: {
+						expression: "$feature.NAME"
+					},
+					symbol: {
+						type: "text", // autocasts as new TextSymbol()
+						color: "black",
+						haloSize: 1,
+						haloColor: "white"
+					}
+				});
+
+				let DallasTornadoTrajectory_kmzToLayer = "b887473c52b84020a6d36c4e11358ae5";
+
+				let Points = new FeatureLayer({
+					portalItem: {
+						id: DallasTornadoTrajectory_kmzToLayer
+					},
+					layerId: 2,
+					title: "Points",
+					labelingInfo: statesLabelClass,
+					popupTemplate: template
+				});
+
+				let Polylines = new FeatureLayer({
+					portalItem: {
+						id: DallasTornadoTrajectory_kmzToLayer
+					},
+					layerId: 3,
+					title: "Polylines",
+					popupTemplate: template
+				});
+				let Polygons = new FeatureLayer({
+					portalItem: {
+						id: DallasTornadoTrajectory_kmzToLayer
+					},
+					layerId: 4,
+					title: "Polygons",
+					popupTemplate: template
+				});
+
+				var GroupLayer_kml = new GroupLayer({
+					title: "Dallas Tornado Trajectory(kml)",
+					visible: true,
+					visibilityMode: "independent",
+					layers: [Polygons, Polylines, Points]
+				});
+
+				map.add(SVI_2018)
+				map.add(parcel_damage)
+				map.add(GroupLayer_kml)
+				
+
+				// Add BasemapGallery -------------------------------
+				const basemapGallery = new BasemapGallery({
+					view: view,
+					container: document.createElement("div")
+				});
+				
+				// Create an Expand instance and set the content
+				// property to the DOM node of the basemap gallery widget
+				const bgExpand = new Expand({
+					view: view,
+					content: basemapGallery
+				});
+				
+				// Add the expand instance to the ui
+				view.ui.add(bgExpand, "top-left");
+
+				// Add LayerList & Legend widget ----------------------
+				view.ui.add(new LayerList({
+					view: view
+				}), "bottom-right");
+				
+				view.ui.add(new Legend({
+					view: view
+				}), "bottom-left");
+			});
+		</script>
+	</head>
+
+	<body class="calcite">
+		<div id="viewDiv"></div>
+	</body>
+</html>
