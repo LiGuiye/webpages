@@ -34,7 +34,7 @@
 				"esri/widgets/Popup",
 				"esri/layers/support/LabelClass",
 				"esri/widgets/Expand",
-				"esri/renderers/ClassBreaksRenderer"
+				"esri/renderers/ClassBreaksRenderer",
 			], function(
 				LayerList,
 				Map,
@@ -47,7 +47,7 @@
 				Popup,
 				LabelClass,
 				Expand,
-				ClassBreaksRenderer
+				ClassBreaksRenderer,
 			) {
 
 				const map = new Map({
@@ -62,6 +62,75 @@
 				});
 
 				// Layers
+
+				// Blurred Survey Data
+				const blurred_survey = new FeatureLayer({
+					url: "https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/BlurredSurveyData/FeatureServer",
+					title: "Blurred Survey Data",
+					popupTemplate: {
+						title: "Survey {pseudo_id}",
+						content: [{
+							type: "fields",
+							fieldInfos: [{
+								fieldName: "pseudo_id",
+								label: "pseudo_id"
+							}, {
+								fieldName: "pseudo_lat",
+								label: "pseudo_lat"
+							}, {
+								fieldName: "pseudo_lon",
+								label: "pseudo_lng"
+							}, {
+								fieldName: "F2014_RPL_THEME1",
+								label: "2014_RPL_THEME1"
+							}, {
+								fieldName: "F2014_RPL_THEME2",
+								label: "2014_RPL_THEME2"
+							}, {
+								fieldName: "F2014_RPL_THEME3",
+								label: "2014_RPL_THEME3"
+							}, {
+								fieldName: "F2014_RPL_THEME4",
+								label: "2014_RPL_THEME4"
+							}, {
+								fieldName: "F2014_RPL_THEMES",
+								label: "2014_RPL_THEMES"
+							}, {
+								fieldName: "F2016_RPL_THEME1",
+								label: "2016_RPL_THEME1"
+							}, {
+								fieldName: "F2016_RPL_THEME2",
+								label: "2016_RPL_THEME2"
+							}, {
+								fieldName: "F2016_RPL_THEME3",
+								label: "2016_RPL_THEME3"
+							}, {
+								fieldName: "F2016_RPL_THEME4",
+								label: "2016_RPL_THEME4"
+							}, {
+								fieldName: "F2016_RPL_THEMES",
+								label: "2016_RPL_THEMES"
+							}, {
+								fieldName: "F2018_RPL_THEME1",
+								label: "2018_RPL_THEME1"
+							}, {
+								fieldName: "F2018_RPL_THEME2",
+								label: "2018_RPL_THEME2"
+							}, {
+								fieldName: "F2018_RPL_THEME3",
+								label: "2018_RPL_THEME3"
+							}, {
+								fieldName: "F2018_RPL_THEME4",
+								label: "2018_RPL_THEME4"
+							}, {
+								fieldName: "F2018_RPL_THEMES",
+								label: "2018_RPL_THEMES"
+							}, ]
+						}]
+					}
+				})
+
+				// Damage Data
 				const parcel_damage = new TileLayer({
 					// ttu
 					// url: "https://tiles.arcgis.com/tiles/4aUxCaDLaSFPHO9o/arcgis/rest/services/Dallas_Parcel_and_Damage2020_Tile/MapServer",
@@ -70,7 +139,7 @@
 					title: "Dallas Parcel and Damage 2020",
 					listMode: "hide-children"
 				});
-				
+
 				// SVI 2018 -------------------------------------
 				const sym1 = {
 					type: "simple-fill",
@@ -118,33 +187,33 @@
 					}
 				};
 				const break_renderer_info = [{
-						// minValue: 0,
-						maxValue: -999,
-						symbol: sym1,
-						label: "-999.0000"
-					}, {
-						minValue: -998.9999,
-						maxValue: 0.25,
-						symbol: sym2,
-						label: "-998.9999 - 0.2500"
-					}, {
-						minValue: 0.2501,
-						maxValue: 0.5001,
-						symbol: sym3,
-						label: "0.2501 - 0.5001"
-					}, {
-						minValue: 0.5002,
-						maxValue: 0.7501,
-						symbol: sym4,
-						label: "0.5002 - 0.7501"
-					}, {
-						minValue: 0.5002,
-						maxValue: 1,
-						symbol: sym5,
-						label: "0.7502 - 1.0000"
-					}]
-					
-				
+					// minValue: 0,
+					maxValue: -999,
+					symbol: sym1,
+					label: "-999.0000"
+				}, {
+					minValue: -998.9999,
+					maxValue: 0.25,
+					symbol: sym2,
+					label: "-998.9999 - 0.2500"
+				}, {
+					minValue: 0.2501,
+					maxValue: 0.5001,
+					symbol: sym3,
+					label: "0.2501 - 0.5001"
+				}, {
+					minValue: 0.5002,
+					maxValue: 0.7501,
+					symbol: sym4,
+					label: "0.5002 - 0.7501"
+				}, {
+					minValue: 0.5002,
+					maxValue: 1,
+					symbol: sym5,
+					label: "0.7502 - 1.0000"
+				}]
+
+
 				let RPL_THEME1_renderer = new ClassBreaksRenderer({
 					type: "class-breaks",
 					field: "RPL_THEME1",
@@ -165,43 +234,45 @@
 					field: "RPL_THEME4",
 					classBreakInfos: break_renderer_info
 				});
-				
-				
+
+				const URL_SVI2018 = "https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/SVI2018_TEXAS_tract/FeatureServer"
 				let SVI_2018_RPL_THEME1 = new FeatureLayer({
-					url: "https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/SVI2018_TEXAS_tract/FeatureServer",
+					url: URL_SVI2018,
 					renderer: RPL_THEME1_renderer,
 					title: "Socioeconomic"
 				});
 				let SVI_2018_RPL_THEME2 = new FeatureLayer({
-					url: "https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/SVI2018_TEXAS_tract/FeatureServer",
+					url: URL_SVI2018,
 					renderer: RPL_THEME2_renderer,
 					title: "Household Composition & Disability"
 				});
 				let SVI_2018_RPL_THEME3 = new FeatureLayer({
-					url: "https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/SVI2018_TEXAS_tract/FeatureServer",
+					url: URL_SVI2018,
 					renderer: RPL_THEME3_renderer,
 					title: "Minority Status & Language"
 				});
 				let SVI_2018_RPL_THEME4 = new FeatureLayer({
-					url: "https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/SVI2018_TEXAS_tract/FeatureServer",
+					url: URL_SVI2018,
 					renderer: RPL_THEME4_renderer,
 					title: "Housing Type & Transportation"
 				});
-				
+
 				const SVI_2018 = new GroupLayer({
 					title: "CDC Social Vulnerability Index",
 					visible: false,
 					layers: [
-						SVI_2018_RPL_THEME4,SVI_2018_RPL_THEME3,SVI_2018_RPL_THEME2,SVI_2018_RPL_THEME1
+						SVI_2018_RPL_THEME4, SVI_2018_RPL_THEME3, SVI_2018_RPL_THEME2, SVI_2018_RPL_THEME1
 					]
 				});
-				
+
 				// kml Tornado Trajectory -------------------------------------
+				const URL_TornadoTrajectory = "https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/DallasTornadoTrajectory_kmzToLayer/FeatureServer"
+
+				// label for point symbol
 				const template = {
 					title: "{NAME}",
 					content: "{PopupInfo}"
 				};
-				
 				const statesLabelClass = new LabelClass({
 					labelExpressionInfo: {
 						expression: "$feature.NAME"
@@ -213,61 +284,53 @@
 						haloColor: "white"
 					}
 				});
-
-				let DallasTornadoTrajectory_kmzToLayer = "b887473c52b84020a6d36c4e11358ae5";
-
+				
 				let Points = new FeatureLayer({
-					portalItem: {
-						id: DallasTornadoTrajectory_kmzToLayer
-					},
-					layerId: 2,
+					url: URL_TornadoTrajectory,
+					layerId: 8,
 					title: "Points",
 					labelingInfo: statesLabelClass,
 					popupTemplate: template
 				});
 
 				let Polylines = new FeatureLayer({
-					portalItem: {
-						id: DallasTornadoTrajectory_kmzToLayer
-					},
-					layerId: 3,
+					url: URL_TornadoTrajectory,
+					layerId: 9,
 					title: "Polylines",
 					popupTemplate: template
 				});
 				let Polygons = new FeatureLayer({
-					portalItem: {
-						id: DallasTornadoTrajectory_kmzToLayer
-					},
-					layerId: 4,
+					url: URL_TornadoTrajectory,
+					layerId: 10,
 					title: "Polygons",
 					popupTemplate: template
 				});
 
 				var GroupLayer_kml = new GroupLayer({
-					title: "Dallas Tornado Trajectory(kml)",
+					title: "Dallas Tornado Trajectory",
 					visible: true,
-					visibilityMode: "independent",
+					// visibilityMode: "independent",
 					layers: [Polygons, Polylines, Points]
 				});
 
 				map.add(SVI_2018)
 				map.add(parcel_damage)
 				map.add(GroupLayer_kml)
-				
+				map.add(blurred_survey)
 
 				// Add BasemapGallery -------------------------------
 				const basemapGallery = new BasemapGallery({
 					view: view,
 					container: document.createElement("div")
 				});
-				
+
 				// Create an Expand instance and set the content
 				// property to the DOM node of the basemap gallery widget
 				const bgExpand = new Expand({
 					view: view,
 					content: basemapGallery
 				});
-				
+
 				// Add the expand instance to the ui
 				view.ui.add(bgExpand, "top-left");
 
@@ -275,7 +338,7 @@
 				view.ui.add(new LayerList({
 					view: view
 				}), "bottom-right");
-				
+
 				view.ui.add(new Legend({
 					view: view
 				}), "bottom-left");
