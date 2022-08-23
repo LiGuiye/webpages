@@ -7,9 +7,11 @@
 	<title>
 		Hurricane Harvey Aug 2017
 	</title>
+	<!-- highcharts -->
+	<script src="https://code.highcharts.com.cn/highcharts/highcharts.js"></script>
 	<!-- arcgis api -->
-	<link rel="stylesheet" href="https://js.arcgis.com/4.17/esri/themes/light/main.css" />
-	<script src="https://js.arcgis.com/4.17/"></script>
+	<link rel="stylesheet" href="https://js.arcgis.com/4.24/esri/themes/light/main.css" />
+	<script src="https://js.arcgis.com/4.24/"></script>
 	<style>
 		html,
 		body {
@@ -19,6 +21,12 @@
 			width: 100%;
 		}
 
+		#container_PatientsCount_zipcode {
+			min-width: 400px;
+			/* min-height:400px; */
+			float: right;
+		}
+
 		#viewDiv {
 			padding: 0;
 			margin: 0;
@@ -26,12 +34,50 @@
 			width: 100%;
 			float: left;
 		}
+
+		#infoDiv {
+			padding: 8px;
+			font-family: Avenir Next W00;
+			font-size: 1em;
+		}
 	</style>
 </head>
 
 <body>
 	<!-- Map -->
 	<div id="viewDiv"></div>
+	<!-- Patients Count Comparison(ZipCode)-->
+	<div id="container_PatientsCount_zipcode"></div>
+
+	<!-- filter -->
+	<div id="infoDiv" class="esri-widget" style="display: none">
+		Select Time:
+		<select id="time-select" class="esri-widget ">
+			<option value="view_patientscount1q2016" selected>1q2016</option>
+			<option value="view_patientscount2q2016">2q2016</option>
+			<option value="view_patientscount3q2016">3q2016</option>
+			<option value="view_patientscount4q2016">4q2016</option>
+			<option value="view_patientscount1q2017">1q2017</option>
+			<option value="view_patientscount2q2017">2q2017</option>
+			<option value="view_patientscount3q2017">3q2017</option>
+			<option value="view_patientscount4q2017">4q2017</option>
+			<option value="view_patientscount1q2018">1q2018</option>
+			<option value="view_patientscount2q2018">2q2018</option>
+			<option value="view_patientscount3q2018">3q2018</option>
+			<option value="view_patientscount4q2018">4q2018</option>
+			<option value="view_patientscount1q2019">1q2019</option>
+			<option value="view_patientscount2q2019">2q2019</option>
+		</select>
+		Classification:
+		<select id="class-select" class="esri-widget ">
+			<option value="equal-interval" selected>Equal interval</option>
+			<option value="quantile">Quantile</option>
+			<option value="natural-breaks">Natual Breaks</option>
+			<option value="manual">Manual</option>
+		</select>
+		Breaks:
+		<input type="number" id="num-classes" class="esri-widget " value="5" min="2" max="10" />
+	</div>
 
 	<script>
 		require([
@@ -47,6 +93,10 @@
 			"esri/widgets/Expand",
 			"esri/renderers/ClassBreaksRenderer",
 			"esri/widgets/Swipe",
+			"esri/core/reactiveUtils",
+			"esri/smartMapping/renderers/color",
+			"esri/smartMapping/statistics/histogram",
+			"esri/widgets/smartMapping/ClassedColorSlider",
 		], function (
 			Map,
 			MapView,
@@ -59,8 +109,14 @@
 			Legend,
 			Expand,
 			ClassBreaksRenderer,
-			Swipe
+			Swipe,
+			reactiveUtils,
+			colorRendererCreator,
+			histogram,
+			ClassedColorSlider,
 		) {
+			var infoDiv = document.getElementById("infoDiv")
+
 			const map = new Map({
 				basemap: "topo-vector"
 			});
@@ -73,6 +129,295 @@
 			});
 
 			// Layers
+			// patients count -----------------------------------------
+			const url_patientscount = "https://services2.arcgis.com/4aUxCaDLaSFPHO9o/arcgis/rest/services/view_patientscount/FeatureServer";
+			var view_patientscount1q2016 = new FeatureLayer({
+				id: "view_patientscount1q2016",
+				title: "Patients Count: 1q2016",
+				url: url_patientscount,
+				outFields: ["*"],
+				layerId: 0,
+				// opacity: 0,
+				// legendEnabled: false,
+				listMode: "show",
+				visible: false
+			});
+			var view_patientscount2q2016 = new FeatureLayer({
+				id: "view_patientscount2q2016",
+				title: "Patients Count: 2q2016",
+				url: url_patientscount,
+				outFields: ["*"],
+				layerId: 1,
+				opacity: 0,
+				legendEnabled: false,
+				listMode: "hide"
+			});
+			var view_patientscount3q2016 = new FeatureLayer({
+				id: "view_patientscount3q2016",
+				title: "Patients Count: 3q2016",
+				url: url_patientscount,
+				outFields: ["*"],
+				layerId: 2,
+				opacity: 0,
+				legendEnabled: false,
+				listMode: "hide"
+			});
+			var view_patientscount4q2016 = new FeatureLayer({
+				id: "view_patientscount4q2016",
+				title: "Patients Count: 4q2016",
+				url: url_patientscount,
+				outFields: ["*"],
+				layerId: 3,
+				opacity: 0,
+				legendEnabled: false,
+				listMode: "hide"
+			});
+			var view_patientscount1q2017 = new FeatureLayer({
+				id: "view_patientscount1q2017",
+				title: "Patients Count: 1q2017",
+				url: url_patientscount,
+				outFields: ["*"],
+				layerId: 4,
+				opacity: 0,
+				legendEnabled: false,
+				listMode: "hide"
+			});
+			var view_patientscount2q2017 = new FeatureLayer({
+				id: "view_patientscount2q2017",
+				title: "Patients Count: 2q2017",
+				url: url_patientscount,
+				outFields: ["*"],
+				layerId: 5,
+				opacity: 0,
+				legendEnabled: false,
+				listMode: "hide"
+			});
+			var view_patientscount3q2017 = new FeatureLayer({
+				id: "view_patientscount3q2017",
+				title: "Patients Count: 3q2017",
+				url: url_patientscount,
+				outFields: ["*"],
+				layerId: 6,
+				opacity: 0,
+				legendEnabled: false,
+				listMode: "hide"
+			});
+			var view_patientscount4q2017 = new FeatureLayer({
+				id: "view_patientscount4q2017",
+				title: "Patients Count: 4q2017",
+				url: url_patientscount,
+				outFields: ["*"],
+				layerId: 7,
+				opacity: 0,
+				legendEnabled: false,
+				listMode: "hide"
+			});
+			var view_patientscount1q2018 = new FeatureLayer({
+				id: "view_patientscount1q2018",
+				title: "Patients Count: 1q2018",
+				url: url_patientscount,
+				outFields: ["*"],
+				layerId: 8,
+				opacity: 0,
+				legendEnabled: false,
+				listMode: "hide"
+			});
+			var view_patientscount2q2018 = new FeatureLayer({
+				id: "view_patientscount2q2018",
+				title: "Patients Count: 2q2018",
+				url: url_patientscount,
+				outFields: ["*"],
+				layerId: 9,
+				opacity: 0,
+				legendEnabled: false,
+				listMode: "hide"
+			});
+			var view_patientscount3q2018 = new FeatureLayer({
+				id: "view_patientscount3q2018",
+				title: "Patients Count: 3q2018",
+				url: url_patientscount,
+				outFields: ["*"],
+				layerId: 10,
+				opacity: 0,
+				legendEnabled: false,
+				listMode: "hide"
+			});
+			var view_patientscount4q2018 = new FeatureLayer({
+				id: "view_patientscount4q2018",
+				title: "Patients Count: 4q2018",
+				url: url_patientscount,
+				outFields: ["*"],
+				layerId: 11,
+				opacity: 0,
+				legendEnabled: false,
+				listMode: "hide"
+			});
+			var view_patientscount1q2019 = new FeatureLayer({
+				id: "view_patientscount1q2019",
+				title: "Patients Count: 1q2019",
+				url: url_patientscount,
+				outFields: ["*"],
+				layerId: 12,
+				opacity: 0,
+				legendEnabled: false,
+				listMode: "hide"
+			});
+			var view_patientscount2q2019 = new FeatureLayer({
+				id: "view_patientscount2q2019",
+				title: "Patients Count: 2q2019",
+				url: url_patientscount,
+				outFields: ["*"],
+				layerId: 13,
+				opacity: 0,
+				legendEnabled: false,
+				listMode: "hide"
+			});
+
+			// hospital ------------------------------------------------
+			var layer_hospital = new FeatureLayer({
+				id: "hospital",
+				url: "https://services2.arcgis.com/4aUxCaDLaSFPHO9o/arcgis/rest/services/TX_hospital/FeatureServer",
+				outFields: ["*"],
+				// opacity: 0,
+				legendEnabled: false,
+				popupTemplate: {
+					title: "Hospital",
+					content: [{
+						type: "fields", // FieldsContentElement
+						fieldInfos: [{
+							fieldName: "THCIC_ID",
+							visible: true,
+							label: "THCIC_ID"
+						},
+						{
+							fieldName: "provider_n",
+							visible: true,
+							label: "Provider Name"
+						}
+						]
+					},
+					{
+						type: "media",
+						mediaInfos: [{
+							title: "<b>Time series</b>",
+							type: "line-chart",
+							caption: "",
+							value: {
+								fields: ["F1Q2016", "F2Q2016", "F3Q2016", "F4Q2016", "F1Q2017", "F2Q2017", "F3Q2017", "F4Q2017",
+									"F1Q2018", "F2Q2018", "F3Q2018", "F4Q2018", "F1Q2019", "F2Q2019"
+								]
+							}
+						}]
+					}
+					]
+				},
+				// popupEnabled: false
+			});
+
+			// Hurricane Harvey Trajectory
+			const url_HurricaneHarvey = "https://services2.arcgis.com/4aUxCaDLaSFPHO9o/arcgis/rest/services/NHC_NOAA_Harvey_best_track/FeatureServer";
+			var layer_HurricaneHarvey_floodmap = new TileLayer({
+				id: "HurricaneHarvey_floodmap",
+				url: "https://tiles.arcgis.com/tiles/4aUxCaDLaSFPHO9o/arcgis/rest/services/Harvey_FloodExtentsCombined_tif/MapServer",
+				title: "flood map",
+				// opacity: 0,
+				visible: false,
+				legendEnabled: false,
+				listMode: "hide-children"
+			});
+			var layer_HurricaneHarvey_points = new FeatureLayer({
+				id: "HurricaneHarvey_points",
+				url: url_HurricaneHarvey,
+				title: "points",
+				outFields: ["*"],
+				layerId: 0,
+				// opacity: 0,
+				// legendEnabled: false,
+				popupTemplate: {
+					// autocasts as new PopupTemplate()
+					title: "{STORMNAME} Track Point",
+					content: [{
+						type: "fields", // FieldsContentElement
+						fieldInfos: [{
+							fieldName: "DTG", label: "Date-Time, UTC"
+						},
+						{
+							fieldName: "STORMTYPE", label: "STORM TYPE"
+						},
+						{
+							fieldName: "INTENSITY", label: "Intensity, mph"
+						},
+						{
+							fieldName: "SS", label: "Severity Index (0-4)"
+						},
+						{
+							fieldName: "LAT", label: "Latitude"
+						},
+						{
+							fieldName: "LON", label: "Longitude"
+						}]
+					}]
+				},
+				popupEnabled: false
+			});
+			var layer_HurricaneHarvey_lines = new FeatureLayer({
+				id: "HurricaneHarvey_lines",
+				url: url_HurricaneHarvey,
+				title: "lines",
+				outFields: ["*"],
+				layerId: 1,
+				// opacity: 0,
+				// legendEnabled: false,
+				popupTemplate: {
+					// autocasts as new PopupTemplate()
+					title: "Harvey Track",
+					content: [{
+						type: "fields", // FieldsContentElement
+						fieldInfos: [
+							{
+								fieldName: "STORMTYPE", label: "STORM TYPE"
+							},
+							{
+								fieldName: "SS", label: "Storm Severity Code"
+							}
+						]
+					}]
+				},
+				popupEnabled: false
+			});
+			var layer_HurricaneHarvey_windswath = new FeatureLayer({
+				id: "HurricaneHarvey_windswath",
+				url: url_HurricaneHarvey,
+				title: "windswath",
+				outFields: ["*"],
+				layerId: 2,
+				visible: false,
+				// opacity: 0,
+				// legendEnabled: false,
+				popupTemplate: {
+					title: "Harvey Windswath Extent",
+					content: [{
+						type: "fields", // FieldsContentElement
+						fieldInfos: [
+							{
+								fieldName: "RADII", label: "Radii"
+							},
+							{
+								fieldName: "STARTDTG", label: "Start Date-Time, UTC"
+							},
+							{
+								fieldName: "ENDDTG", label: "End Date-Time, UTC"
+							}
+						]
+					}]
+				},
+				popupEnabled: false
+			});
+
+			const hurricane_harvey_trajectory = new GroupLayer({
+				title: "NHC NOAA Harvey Trajectory",
+				layers: [layer_HurricaneHarvey_floodmap, layer_HurricaneHarvey_windswath, layer_HurricaneHarvey_lines, layer_HurricaneHarvey_points]
+			})
 
 			// SVI 2018 -------------------------------------
 			const sym1 = {
@@ -149,22 +494,18 @@
 
 
 			let RPL_THEME1_renderer = new ClassBreaksRenderer({
-				type: "class-breaks",
 				field: "RPL_THEME1",
 				classBreakInfos: break_renderer_info
 			});
 			let RPL_THEME2_renderer = new ClassBreaksRenderer({
-				type: "class-breaks",
 				field: "RPL_THEME2",
 				classBreakInfos: break_renderer_info
 			});
 			let RPL_THEME3_renderer = new ClassBreaksRenderer({
-				type: "class-breaks",
 				field: "RPL_THEME3",
 				classBreakInfos: break_renderer_info
 			});
 			let RPL_THEME4_renderer = new ClassBreaksRenderer({
-				type: "class-breaks",
 				field: "RPL_THEME4",
 				classBreakInfos: break_renderer_info
 			});
@@ -360,13 +701,20 @@
 			map.add(NOAA_harvey_imagery)
 			map.add(MAXAR)
 			map.add(SVI_2018)
+			map.layers.push(
+				view_patientscount1q2016, view_patientscount2q2016, view_patientscount3q2016, view_patientscount4q2016,
+				view_patientscount1q2017, view_patientscount2q2017, view_patientscount3q2017, view_patientscount4q2017,
+				view_patientscount1q2018, view_patientscount2q2018, view_patientscount3q2018, view_patientscount4q2018,
+				view_patientscount1q2019, view_patientscount2q2019);
 			map.add(harrisGroupLayer)
+			map.add(hurricane_harvey_trajectory)
+			map.add(layer_hospital)
 
 			// create a new Swipe widget
 			const swipe = new Swipe({
 				leadingLayers: [pre_event],
 				trailingLayers: [post_event],
-				position: 35, // set position of widget to 35%
+				position: 20,
 				view: view
 			});
 
@@ -398,21 +746,389 @@
 				view: view
 			}), "bottom-left");
 
-			// combine them together
-			// const layerList = new LayerList({
-			// 	view: view,
-			// 	listItemCreatedFunction: (event) => {
-			// 		const item = event.item;
-			// 		if (item.layer.type != "group") {
-			// 			// don't show legend twice
-			// 			item.panel = {
-			// 				content: "legend",
-			// 				open: true
-			// 			};
-			// 		}
-			// 	}
-			// });
-			// view.ui.add(layerList, "bottom-left");
+			// filters -----------------------
+			let numClassesInput, slider;
+			var patientstypeFilter, sexFilter, raceFilter, ageFilter;
+			var fieldName1, fieldName2;
+			var subtitle = "";
+
+			var patientstype = ["All", "IP", "OP"];
+			var sex = ["0", "1", "2"];
+			var race = ["0", "1", "2", "3", "41", "42", "5"];
+			var age = ["0", "1", "2", "3"];
+			var patientstypeFilter = document.createElement("select");
+			var sexFilter = document.createElement("select");
+			var raceFilter = document.createElement("select");
+			var ageFilter = document.createElement("select");
+			filterClass = "esri-widget esri-select";
+			filterStyle = "width: 275px; font-family: Avenir Next W00; font-size: 1em;";
+			patientstypeFilter.setAttribute("id", "patientstypeSelect");
+			patientstypeFilter.setAttribute("class", filterClass);
+			patientstypeFilter.setAttribute("style", filterStyle);
+			sexFilter.setAttribute("id", "sexSelect");
+			sexFilter.setAttribute("class", filterClass);
+			sexFilter.setAttribute("style", filterStyle);
+			raceFilter.setAttribute("id", "raceSelect");
+			raceFilter.setAttribute("class", filterClass);
+			raceFilter.setAttribute("style", filterStyle);
+			ageFilter.setAttribute("id", "ageSelect");
+			ageFilter.setAttribute("class", filterClass);
+			ageFilter.setAttribute("style", filterStyle);
+			patientstype.forEach(function (sql) {
+				var option = document.createElement("option");
+				option.value = sql;
+				option.innerHTML = "PatientsType: " + sql;
+				patientstypeFilter.appendChild(option);
+			});
+			sex.forEach(function (sql) {
+				var option = document.createElement("option");
+				option.value = sql;
+				// # "0" All  "1" Female "2" Male
+				switch (sql) {
+					case "0":
+						option.innerHTML = "Sex: All";
+						break;
+					case "1":
+						option.innerHTML = "Sex: Female";
+						break;
+					case "2":
+						option.innerHTML = "Sex: Male";
+						break;
+				};
+				sexFilter.appendChild(option);
+			});
+			race.forEach(function (sql) {
+				var option = document.createElement("option");
+				option.value = sql;
+				// # 1 American Indian / Eskimo / Aleut 2 Asian or Pacific Islander 3 Black
+				// # 41 White(Hispanic Origin) 42 White(Not of Hispanic Origin) 5 Other
+				var race = ["0", "1", "2", "3", "41", "42", "5"];
+				switch (sql) {
+					case "0":
+						option.innerHTML = "Race: All";
+						break;
+					case "1":
+						option.innerHTML = "Race: American Indian / Eskimo / Aleut";
+						break;
+					case "2":
+						option.innerHTML = "Race: Asian or Pacific Islander";
+						break;
+					case "3":
+						option.innerHTML = "Race: Black";
+						break;
+					case "41":
+						option.innerHTML = "Race: White(Hispanic Origin)";
+						break;
+					case "42":
+						option.innerHTML = "Race: White(Not of Hispanic Origin)";
+						break;
+					case "5":
+						option.innerHTML = "Race: Other";
+						break;
+				};
+				raceFilter.appendChild(option);
+			});
+			age.forEach(function (sql) {
+				var option = document.createElement("option");
+				option.value = sql;
+				// # "0" All Ages; "1" Age 0 - 17; "2" Age 17 - 64; "3" Age 65 +
+				switch (sql) {
+					case "0":
+						option.innerHTML = "Age: All";
+						break;
+					case "1":
+						option.innerHTML = "Age: 0 - 17";
+						break;
+					case "2":
+						option.innerHTML = "Age: 17 - 64";
+						break;
+					case "3":
+						option.innerHTML = "Age: 65 +";
+						break;
+				};
+				ageFilter.appendChild(option);
+			});
+
+			
+			
+
+			// default layer for patientscount
+			var show_layer = view_patientscount1q2016;
+			controlUI_addListener(show_layer)
+
+			function controlUI_addListener(show_layer) {
+				reactiveUtils.watch(
+					() => show_layer.visible,
+					(visible) => {
+						if (visible) {
+							view.ui.add(infoDiv, "top-right");
+							document.getElementById("infoDiv").style.display = "block"
+
+							view.ui.add(patientstypeFilter, "top-right");
+							view.ui.add(sexFilter, "top-right");
+							view.ui.add(raceFilter, "top-right");
+							view.ui.add(ageFilter, "top-right");
+
+							document.getElementById("viewDiv").style.width = "70%"
+							document.getElementById("container_PatientsCount_zipcode").style.width = "30%"
+							document.getElementById("container_PatientsCount_zipcode").style.height = "100%"
+
+							// console.log(`patients count layer is turned on`);
+
+							// layer and renderer
+							timeSelect = document.getElementById("time-select");
+							timeSelect.addEventListener("change", generateRenderer);
+
+							classSelect = document.getElementById("class-select");
+							classSelect.addEventListener("change", generateRenderer);
+
+							numClassesInput = document.getElementById("num-classes");
+							numClassesInput.addEventListener("change", generateRenderer);
+
+							reactiveUtils.whenOnce(() => view.updating === false, generateRenderer)
+
+							// filter
+							patientstypeSelect.addEventListener("change", generateRenderer);
+							sexSelect.addEventListener("change", generateRenderer);
+							raceSelect.addEventListener("change", generateRenderer);
+							ageSelect.addEventListener("change", generateRenderer);
+
+							// init render effect
+							generateRenderer()
+
+							// Patients Count Comparison(ZipCode)
+							// Get the screen point from the view's click event and load Chart(PatientsCount_zipcode)
+							const x_data = ["1q2016", "2q2016", "3q2016", "4q2016", "1q2017", "2q2017", "3q2017",
+								"4q2017", "1q2018", "2q2018", "3q2018", "4q2018", "1q2019", "2q2019"
+							];
+
+							view.on("click", function (event) {
+								var zip_code = "";
+								var y_data = [];
+								// Search for graphics at the clicked location. View events can be used
+								// as screen locations as they expose an x,y coordinate that conforms
+								// to the ScreenPoint definition.
+								view.hitTest(event).then(function (response) {
+									if (response.results.length) {
+										if (fieldName1 == "All") {
+											for (i in x_data) {
+												var graphic = response.results.filter(function (result) {
+													// check if the graphic belongs to the layer of interest
+													return result.graphic.layer === eval('view_patientscount' + x_data[i])
+												})[0].graphic;
+												y_data[i] = Number(eval('graphic.attributes.IP' + fieldName2)) +
+													Number(eval('graphic.attributes.OP' + fieldName2));
+											}
+											zip_code = graphic.attributes.ZIP_CODE;
+										} else {
+											for (i in x_data) {
+												var graphic = response.results.filter(function (result) {
+													// check if the graphic belongs to the layer of interest
+													return result.graphic.layer === eval('view_patientscount' + x_data[i])
+												})[0].graphic;
+												y_data[i] = Number(eval('graphic.attributes.' + fieldName1 + fieldName2));
+											}
+											zip_code = graphic.attributes.ZIP_CODE;
+										}
+
+										loadChart_PatientsCount_zipcode(zip_code, x_data, y_data);
+
+										// clear color of the last clicked feature 
+										view.graphics.removeAll();
+										// highlight the clicked feature in red color
+										graphic.symbol = {
+											type: "simple-fill",
+											color: "red",
+											outline: {
+												color: [128, 128, 128, 0.5],
+												width: "0.5px"
+											}
+										};
+										view.graphics.add(graphic); //add color
+									};
+								});
+							});
+						} else {
+							// this will be useless when I changed the show_layer 
+							document.getElementById("infoDiv").style.display = "none"
+							view.ui.remove(infoDiv, "top-right");
+
+							view.ui.remove(patientstypeFilter, "top-right");
+							view.ui.remove(sexFilter, "top-right");
+							view.ui.remove(raceFilter, "top-right");
+							view.ui.remove(ageFilter, "top-right");
+							// clear color of the last clicked feature 
+							view.graphics.removeAll();
+							// clear the Patients Count Comparison chart
+							document.getElementById('container_PatientsCount_zipcode').innerHTML = "";
+							document.getElementById("viewDiv").style.width = "100%"
+							document.getElementById("container_PatientsCount_zipcode").style.height = 0
+							document.getElementById("container_PatientsCount_zipcode").style.width = 0
+
+							// console.log(`patients count layer is turned off`);
+						}
+					}
+				);
+			}
+
+			// load HighCharts when click patients count layer
+			function loadChart_PatientsCount_zipcode(zip_code, x_data, y_data) {
+				var chart = Highcharts.chart('container_PatientsCount_zipcode', {
+					chart: {
+						type: 'line'
+					},
+					title: {
+						text: 'Patients Count under the Filter in Zip Code: ' + zip_code
+					},
+					subtitle: {
+						text: subtitle
+					},
+					xAxis: {
+						categories: x_data
+					},
+					yAxis: {
+						title: {
+							text: 'Patients Count'
+						}
+					},
+					plotOptions: {
+						line: {
+							dataLabels: {
+								enabled: true
+							},
+							enableMouseTracking: true
+						}
+					},
+					series: [{
+						name: 'Patients Count',
+						data: y_data
+					}]
+				});
+			}
+
+			// thcic_id, providerName, y_data
+			// Generate rounded arcade expression when user selects a field name
+			function getValueExpression(fieldName1, fieldName2) {
+				if (fieldName1 == "All") {
+					return ("Round( ($feature.IP" + fieldName2 + ") )+Round( ($feature.OP" + fieldName2 + ") )");
+				} else {
+					return ("Round( ($feature." + fieldName1 + fieldName2 + ") )");
+				}
+			}
+
+			function generateRenderer() {
+				fieldName1 = patientstypeSelect.value;
+				fieldName2 = sexSelect.value + raceSelect.value + ageSelect.value;
+				var subtitle = "";
+
+				var layerTime = timeSelect.options[timeSelect.selectedIndex].value;
+				if (!(layerTime === show_layer.id)) {
+					show_layer.opacity = 0;
+					show_layer.legendEnabled = false;
+					show_layer.listMode = "hide";
+					
+					show_layer = map.findLayerById(layerTime)
+					show_layer.opacity = 1;
+					show_layer.legendEnabled = true;
+					show_layer.listMode = "show"
+					controlUI_addListener(show_layer)
+				}
+
+				fieldName1 = patientstypeSelect.value;
+				fieldName2 = sexSelect.value + raceSelect.value + ageSelect.value;
+				subtitle = patientstypeSelect.options[patientstypeSelect.selectedIndex].text + " " + sexSelect.options[sexSelect
+					.selectedIndex]
+					.text + " " + raceSelect.options[raceSelect.selectedIndex].text + " " + ageSelect.options[ageSelect.selectedIndex]
+						.text;
+				console.log(fieldName1 + fieldName2);
+
+				// default to natural-breaks when manual is selected for classification method
+				const classificationMethod = document.getElementById("class-select").value === "manual" ? "natural-breaks" : document.getElementById("class-select").value;
+
+				var params = {
+					layer: show_layer,
+					valueExpression: getValueExpression(fieldName1, fieldName2),
+					view: view,
+					classificationMethod: classificationMethod,
+					numClasses: parseInt(document.getElementById("num-classes").value),
+					// legendOptions: {
+					// 	title: title
+					// }
+				};
+
+				// clear the selected feature
+				view.graphics.removeAll();
+				// clear the Patients Count Comparison chart
+				document.getElementById('container_PatientsCount_zipcode').innerHTML = "";
+
+				// generate the renderer and set it on the layer
+				colorRendererCreator
+					.createClassBreaksRenderer(params)
+					.then(function (rendererResponse) {
+						show_layer.renderer = rendererResponse.renderer;
+
+						if (classSelect.value === "manual") {
+							// if manual is selected, then add or update
+							// a classed color slider to allow the user to
+							// construct manual class breaks
+							updateColorSlider(rendererResponse, show_layer);
+						} else {
+							destroySlider(slider);
+						}
+					})
+			}
+
+			// If manual classification method is selected, then create
+			// a classed color slider to allow user to manually modify
+			// the class breaks starting with the generated renderer
+			function updateColorSlider(rendererResult, show_layer) {
+				histogram({
+					layer: show_layer,
+					valueExpression: getValueExpression(fieldName1, fieldName2),
+					view: view,
+					numBins: 100
+				}).then(function (histogramResult) {
+					if (!slider) {
+						const sliderContainer = document.createElement("div");
+						const container = document.createElement("div");
+						container.id = "containerDiv";
+						container.appendChild(sliderContainer);
+						view.ui.add(container, "top-right");
+
+						slider = ClassedColorSlider.fromRendererResult(
+							rendererResult,
+							histogramResult
+						);
+						slider.container = container;
+						slider.viewModel.precision = 1;
+
+						function changeEventHandler() {
+							const renderer = show_layer.renderer.clone();
+							renderer.classBreakInfos = slider.updateClassBreakInfos(
+								renderer.classBreakInfos
+							);
+							show_layer.renderer = renderer;
+						}
+
+						slider.on(
+							["thumb-change", "thumb-drag", "min-change", "max-change"],
+							changeEventHandler
+						);
+					} else {
+						slider.updateFromRendererResult(rendererResult, histogramResult);
+					}
+				});
+			}
+
+			function destroySlider(slider) {
+				if (slider) {
+					let container = document.getElementById("containerDiv");
+					view.ui.remove(container);
+					slider.container = null;
+					slider = null;
+					container = null;
+				}
+			}
 		});
 	</script>
 </body>
