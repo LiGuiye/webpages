@@ -680,13 +680,13 @@
 
 			// MAXAR Hurricane Harvey Imagery
 			const pre_event = new TileLayer({
-				url: "https://tiles.arcgis.com/tiles/b3fMqPOmotX6SV4k/arcgis/rest/services/pre_event/MapServer",
+				url: "https://tiles.arcgis.com/tiles/b3fMqPOmotX6SV4k/arcgis/rest/services/Harris_pre_event/MapServer",
 				title: "pre-event",
 				listMode: "hide-children"
 			})
 
 			const post_event = new TileLayer({
-				url: "https://tiles.arcgis.com/tiles/b3fMqPOmotX6SV4k/arcgis/rest/services/post_event/MapServer",
+				url: "https://tiles.arcgis.com/tiles/b3fMqPOmotX6SV4k/arcgis/rest/services/Harris_post_event/MapServer",
 				title: "post-event",
 				listMode: "hide-children"
 			})
@@ -710,7 +710,7 @@
 			map.add(hurricane_harvey_trajectory)
 			map.add(layer_hospital)
 
-			// create a new Swipe widget
+			// create a new Swipe widget for MAXAR Imagery
 			const swipe = new Swipe({
 				leadingLayers: [pre_event],
 				trailingLayers: [post_event],
@@ -718,8 +718,16 @@
 				view: view
 			});
 
-			// add the widget to the view
-			view.ui.add(swipe);
+			reactiveUtils.watch(
+				() => MAXAR.visible,
+				(visible) => {
+					if (visible) {
+						// add the widget to the view
+						view.ui.add(swipe);
+					} else {
+						view.ui.remove(swipe);
+					}
+				});
 
 			// Add BasemapGallery -------------------------------
 			const basemapGallery = new BasemapGallery({
@@ -849,8 +857,8 @@
 				ageFilter.appendChild(option);
 			});
 
-			
-			
+
+
 
 			// default layer for patientscount
 			var show_layer = view_patientscount1q2016;
@@ -1026,7 +1034,7 @@
 					show_layer.opacity = 0;
 					show_layer.legendEnabled = false;
 					show_layer.listMode = "hide";
-					
+
 					show_layer = map.findLayerById(layerTime)
 					show_layer.opacity = 1;
 					show_layer.legendEnabled = true;
