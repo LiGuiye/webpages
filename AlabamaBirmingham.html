@@ -3,7 +3,7 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no" />
 		<title>
-			Dallas
+			Alabama Birmingham
 		</title>
 
 		<link rel="stylesheet" href="https://js.arcgis.com/4.19/esri/themes/light/main.css" />
@@ -57,16 +57,15 @@
 				const view = new MapView({
 					container: "viewDiv",
 					map: map,
-					center: [-96.81758, 32.915744], // longitude, latitude
-					zoom: 12
+					center: [-86.8104, 33.5186], // longitude, latitude
+					zoom: 8
 				});
 
 				// Layers
 
 				// Blurred Survey Data
 				const blurred_survey = new FeatureLayer({
-					// url: "https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/BlurredSurveyData/FeatureServer",
-					url: "https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/BlurredSurveyData_SVI2014_2016_2018_Dallas/FeatureServer",
+					url: "https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/BlurredSurveyData_SVI2014_2016_2018_Alabama/FeatureServer",
 					title: "Blurred Survey Data",
 					popupTemplate: {
 						title: "Survey {pseudo_id}",
@@ -130,16 +129,6 @@
 						}]
 					}
 				})
-
-				// Damage Data
-				const parcel_damage = new TileLayer({
-					// ttu
-					// url: "https://tiles.arcgis.com/tiles/4aUxCaDLaSFPHO9o/arcgis/rest/services/Dallas_Parcel_and_Damage2020_Tile/MapServer",
-					// cu boulder
-					url: "https://tiles.arcgis.com/tiles/b3fMqPOmotX6SV4k/arcgis/rest/services/Dallas_Parcel_and_Damage2020/MapServer",
-					title: "Dallas Parcel and Damage 2020",
-					listMode: "hide-children"
-				});
 
 				// SVI 2018 -------------------------------------
 				const sym1 = {
@@ -236,7 +225,7 @@
 					classBreakInfos: break_renderer_info
 				});
 
-				const URL_SVI2018 = "https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/SVI2018_TEXAS_tract/FeatureServer"
+				const URL_SVI2018 = "https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/SVI2018_ALABAMA_tract/FeatureServer"
 				let SVI_2018_RPL_THEME1 = new FeatureLayer({
 					url: URL_SVI2018,
 					renderer: RPL_THEME1_renderer,
@@ -261,14 +250,14 @@
 				const SVI_2018 = new GroupLayer({
 					title: "CDC Social Vulnerability Index 2018",
 					visible: false,
-					visibilityMode: "exclusive",
+                    visibilityMode: "exclusive",
 					layers: [
 						SVI_2018_RPL_THEME4, SVI_2018_RPL_THEME3, SVI_2018_RPL_THEME2, SVI_2018_RPL_THEME1
 					]
 				});
 
 				// kml Tornado Trajectory -------------------------------------
-				const URL_TornadoTrajectory = "https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/DallasTornadoTrajectory_kmzToLayer/FeatureServer"
+				const URL_TornadoTrajectory = "https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/Birmingham_Trajectory/FeatureServer"
 
 				// label for point symbol
 				const template = {
@@ -287,39 +276,135 @@
 					}
 				});
 				
-				let Points = new FeatureLayer({
+				let Points1 = new FeatureLayer({
 					url: URL_TornadoTrajectory,
-					layerId: 8,
+					layerId: 97,
 					title: "Points",
+                    legendEnabled: false,
+					labelingInfo: statesLabelClass,
+					popupTemplate: template
+				});
+                let Points2 = new FeatureLayer({
+					url: URL_TornadoTrajectory,
+					layerId: 92,
+					title: "Points",
+                    legendEnabled: false,
+					labelingInfo: statesLabelClass,
+					popupTemplate: template
+				});
+                let Points3 = new FeatureLayer({
+					url: URL_TornadoTrajectory,
+					layerId: 87,
+					title: "Points",
+                    legendEnabled: false,
+					labelingInfo: statesLabelClass,
+					popupTemplate: template
+				});
+                let Points4 = new FeatureLayer({
+					url: URL_TornadoTrajectory,
+					layerId: 82,
+					title: "Points",
+                    legendEnabled: false,
+					labelingInfo: statesLabelClass,
+					popupTemplate: template
+				});
+                let Points5 = new FeatureLayer({
+					url: URL_TornadoTrajectory,
+					layerId: 77,
+					title: "Points",
+                    legendEnabled: false,
 					labelingInfo: statesLabelClass,
 					popupTemplate: template
 				});
 
-				let Polylines = new FeatureLayer({
+				let Polylines1 = new FeatureLayer({
 					url: URL_TornadoTrajectory,
-					layerId: 9,
+					layerId: 96,
 					title: "Polylines",
+                    legendEnabled: false,
 					popupTemplate: template
 				});
-				let Polygons = new FeatureLayer({
+                let Polylines2 = new FeatureLayer({
 					url: URL_TornadoTrajectory,
-					layerId: 10,
+					layerId: 91,
+					title: "Polylines",
+                    legendEnabled: false,
+					popupTemplate: template
+				});
+                let Polylines3 = new FeatureLayer({
+					url: URL_TornadoTrajectory,
+					layerId: 86,
+					title: "Polylines",
+                    legendEnabled: false,
+					popupTemplate: template
+				});
+                let Polylines4 = new FeatureLayer({
+					url: URL_TornadoTrajectory,
+					layerId: 81,
+					title: "Polylines",
+                    legendEnabled: false,
+					popupTemplate: template
+				});
+                let Polylines5 = new FeatureLayer({
+					url: URL_TornadoTrajectory,
+					layerId: 75,
+					title: "Polylines",
+                    legendEnabled: false,
+					popupTemplate: template
+				});
+
+				let Polygons1 = new FeatureLayer({
+					url: URL_TornadoTrajectory,
+					layerId: 95,
 					title: "Polygons",
+                    legendEnabled: false,
+					popupTemplate: template
+				});
+                let Polygons2 = new FeatureLayer({
+					url: URL_TornadoTrajectory,
+					layerId: 90,
+					title: "Polygons",
+                    legendEnabled: false,
+					popupTemplate: template
+				});
+                let Polygons3 = new FeatureLayer({
+					url: URL_TornadoTrajectory,
+					layerId: 85,
+					title: "Polygons",
+                    legendEnabled: false,
+					popupTemplate: template
+				});
+                let Polygons4 = new FeatureLayer({
+					url: URL_TornadoTrajectory,
+					layerId: 80,
+					title: "Polygons",
+                    legendEnabled: false,
+					popupTemplate: template
+				});
+                let Polygons5 = new FeatureLayer({
+					url: URL_TornadoTrajectory,
+					layerId: 73,
+					title: "Polygons",
+                    legendEnabled: false,
 					popupTemplate: template
 				});
 
 				var GroupLayer_kml = new GroupLayer({
-					title: "Dallas Tornado Trajectory",
+					title: "Alabama Birmingham Trajectory",
 					visible: true,
 					// visibilityMode: "independent",
-					layers: [Polygons, Polylines, Points]
+                    listMode: "hide-children",
+					layers: [
+                        Polygons1, Polygons2, Polygons3 ,Polygons4, Polygons5,
+                        Polylines1, Polylines2, Polylines3, Polylines4, Polylines5,
+                        Points1, Points2, Points3, Points4, Points5,
+                    ]
 				});
 
 				map.add(SVI_2018)
-				map.add(parcel_damage)
+                map.add(blurred_survey)
 				map.add(GroupLayer_kml)
-				map.add(blurred_survey)
-
+				
 				// Add BasemapGallery -------------------------------
 				const basemapGallery = new BasemapGallery({
 					view: view,

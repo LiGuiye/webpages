@@ -2,9 +2,7 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no" />
-		<title>
-			Dallas
-		</title>
+		<title>Tennessee Nashville Tornado Mar 2020</title>
 
 		<link rel="stylesheet" href="https://js.arcgis.com/4.19/esri/themes/light/main.css" />
 
@@ -26,28 +24,28 @@
 			require(["esri/widgets/LayerList",
 				"esri/Map",
 				"esri/views/MapView",
-				"esri/widgets/BasemapGallery",
 				"esri/layers/FeatureLayer",
 				"esri/widgets/Legend",
 				"esri/layers/TileLayer",
 				"esri/layers/GroupLayer",
 				"esri/widgets/Popup",
 				"esri/layers/support/LabelClass",
-				"esri/widgets/Expand",
 				"esri/renderers/ClassBreaksRenderer",
+				"esri/widgets/BasemapGallery",
+				"esri/widgets/Expand",
 			], function(
 				LayerList,
 				Map,
 				MapView,
-				BasemapGallery,
 				FeatureLayer,
 				Legend,
 				TileLayer,
 				GroupLayer,
 				Popup,
 				LabelClass,
-				Expand,
 				ClassBreaksRenderer,
+				BasemapGallery,
+				Expand
 			) {
 
 				const map = new Map({
@@ -57,90 +55,11 @@
 				const view = new MapView({
 					container: "viewDiv",
 					map: map,
-					center: [-96.81758, 32.915744], // longitude, latitude
-					zoom: 12
+					center: [-86, 36.10], // longitude, latitude
+					zoom: 10
 				});
 
-				// Layers
-
-				// Blurred Survey Data
-				const blurred_survey = new FeatureLayer({
-					// url: "https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/BlurredSurveyData/FeatureServer",
-					url: "https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/BlurredSurveyData_SVI2014_2016_2018_Dallas/FeatureServer",
-					title: "Blurred Survey Data",
-					popupTemplate: {
-						title: "Survey {pseudo_id}",
-						content: [{
-							type: "fields",
-							fieldInfos: [{
-								fieldName: "pseudo_id",
-								label: "pseudo_id"
-							}, {
-								fieldName: "pseudo_lat",
-								label: "pseudo_lat"
-							}, {
-								fieldName: "pseudo_lon",
-								label: "pseudo_lng"
-							}, {
-								fieldName: "F2014_RPL_THEME1",
-								label: "2014_RPL_THEME1"
-							}, {
-								fieldName: "F2014_RPL_THEME2",
-								label: "2014_RPL_THEME2"
-							}, {
-								fieldName: "F2014_RPL_THEME3",
-								label: "2014_RPL_THEME3"
-							}, {
-								fieldName: "F2014_RPL_THEME4",
-								label: "2014_RPL_THEME4"
-							}, {
-								fieldName: "F2014_RPL_THEMES",
-								label: "2014_RPL_THEMES"
-							}, {
-								fieldName: "F2016_RPL_THEME1",
-								label: "2016_RPL_THEME1"
-							}, {
-								fieldName: "F2016_RPL_THEME2",
-								label: "2016_RPL_THEME2"
-							}, {
-								fieldName: "F2016_RPL_THEME3",
-								label: "2016_RPL_THEME3"
-							}, {
-								fieldName: "F2016_RPL_THEME4",
-								label: "2016_RPL_THEME4"
-							}, {
-								fieldName: "F2016_RPL_THEMES",
-								label: "2016_RPL_THEMES"
-							}, {
-								fieldName: "F2018_RPL_THEME1",
-								label: "2018_RPL_THEME1"
-							}, {
-								fieldName: "F2018_RPL_THEME2",
-								label: "2018_RPL_THEME2"
-							}, {
-								fieldName: "F2018_RPL_THEME3",
-								label: "2018_RPL_THEME3"
-							}, {
-								fieldName: "F2018_RPL_THEME4",
-								label: "2018_RPL_THEME4"
-							}, {
-								fieldName: "F2018_RPL_THEMES",
-								label: "2018_RPL_THEMES"
-							}, ]
-						}]
-					}
-				})
-
-				// Damage Data
-				const parcel_damage = new TileLayer({
-					// ttu
-					// url: "https://tiles.arcgis.com/tiles/4aUxCaDLaSFPHO9o/arcgis/rest/services/Dallas_Parcel_and_Damage2020_Tile/MapServer",
-					// cu boulder
-					url: "https://tiles.arcgis.com/tiles/b3fMqPOmotX6SV4k/arcgis/rest/services/Dallas_Parcel_and_Damage2020/MapServer",
-					title: "Dallas Parcel and Damage 2020",
-					listMode: "hide-children"
-				});
-
+				//Layers
 				// SVI 2018 -------------------------------------
 				const sym1 = {
 					type: "simple-fill",
@@ -216,27 +135,23 @@
 
 
 				let RPL_THEME1_renderer = new ClassBreaksRenderer({
-					type: "class-breaks",
 					field: "RPL_THEME1",
 					classBreakInfos: break_renderer_info
 				});
 				let RPL_THEME2_renderer = new ClassBreaksRenderer({
-					type: "class-breaks",
 					field: "RPL_THEME2",
 					classBreakInfos: break_renderer_info
 				});
 				let RPL_THEME3_renderer = new ClassBreaksRenderer({
-					type: "class-breaks",
 					field: "RPL_THEME3",
 					classBreakInfos: break_renderer_info
 				});
 				let RPL_THEME4_renderer = new ClassBreaksRenderer({
-					type: "class-breaks",
 					field: "RPL_THEME4",
 					classBreakInfos: break_renderer_info
 				});
 
-				const URL_SVI2018 = "https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/SVI2018_TEXAS_tract/FeatureServer"
+				const URL_SVI2018 = "https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/SVI2018_TENNESSEE_tract/FeatureServer"
 				let SVI_2018_RPL_THEME1 = new FeatureLayer({
 					url: URL_SVI2018,
 					renderer: RPL_THEME1_renderer,
@@ -267,14 +182,94 @@
 					]
 				});
 
-				// kml Tornado Trajectory -------------------------------------
-				const URL_TornadoTrajectory = "https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/DallasTornadoTrajectory_kmzToLayer/FeatureServer"
+				//Damage Parcel
+				let Wilson_layer = new TileLayer({
+					url: "https://tiles.arcgis.com/tiles/b3fMqPOmotX6SV4k/arcgis/rest/services/Wilson_Parcel_and_Damage_Tile/MapServer",
+					layerId: 35,
+					title:"Wilson Parcel and Damage",
+					listMode: "hide-children"
+				});				
+				
+				let Putnam_layer = new TileLayer({
+					url: "https://tiles.arcgis.com/tiles/b3fMqPOmotX6SV4k/arcgis/rest/services/Putnam_Parcel_and_Damage_Tile/MapServer",
+					layerId: 65,
+					title:"Putnam Parcel and Damage",
+					listMode: "hide-children"
+				});
 
-				// label for point symbol
+				// Blurred Survey data
+				const blurred_survey = new FeatureLayer({
+					url: "https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/BlurredSurveyData_SVI2014_2016_2018_Tennessee(Nashville)/FeatureServer",
+					title: "Blurred Survey Data",
+					popupTemplate: {
+						title: "Survey {pseudo_id}",
+						content: [{
+							type: "fields",
+							fieldInfos: [{
+								fieldName: "pseudo_id",
+								label: "pseudo_id"
+							}, {
+								fieldName: "pseudo_lat",
+								label: "pseudo_lat"
+							}, {
+								fieldName: "pseudo_lon",
+								label: "pseudo_lng"
+							}, {
+								fieldName: "F2014_RPL_THEME1",
+								label: "2014_RPL_THEME1"
+							}, {
+								fieldName: "F2014_RPL_THEME2",
+								label: "2014_RPL_THEME2"
+							}, {
+								fieldName: "F2014_RPL_THEME3",
+								label: "2014_RPL_THEME3"
+							}, {
+								fieldName: "F2014_RPL_THEME4",
+								label: "2014_RPL_THEME4"
+							}, {
+								fieldName: "F2014_RPL_THEMES",
+								label: "2014_RPL_THEMES"
+							}, {
+								fieldName: "F2016_RPL_THEME1",
+								label: "2016_RPL_THEME1"
+							}, {
+								fieldName: "F2016_RPL_THEME2",
+								label: "2016_RPL_THEME2"
+							}, {
+								fieldName: "F2016_RPL_THEME3",
+								label: "2016_RPL_THEME3"
+							}, {
+								fieldName: "F2016_RPL_THEME4",
+								label: "2016_RPL_THEME4"
+							}, {
+								fieldName: "F2016_RPL_THEMES",
+								label: "2016_RPL_THEMES"
+							}, {
+								fieldName: "F2018_RPL_THEME1",
+								label: "2018_RPL_THEME1"
+							}, {
+								fieldName: "F2018_RPL_THEME2",
+								label: "2018_RPL_THEME2"
+							}, {
+								fieldName: "F2018_RPL_THEME3",
+								label: "2018_RPL_THEME3"
+							}, {
+								fieldName: "F2018_RPL_THEME4",
+								label: "2018_RPL_THEME4"
+							}, {
+								fieldName: "F2018_RPL_THEMES",
+								label: "2018_RPL_THEMES"
+							}, ]
+						}]
+					}
+				})
+				// Track Data
+				//kml
 				const template = {
 					title: "{NAME}",
 					content: "{PopupInfo}"
 				};
+				
 				const statesLabelClass = new LabelClass({
 					labelExpressionInfo: {
 						expression: "$feature.NAME"
@@ -287,38 +282,40 @@
 					}
 				});
 				
+				let NashvilleCokevilleTornadoTrajectory_kmzToLayer = "https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/NashvilleCokevilleTornadoTrajectory_kmzToLayer/FeatureServer";
 				let Points = new FeatureLayer({
-					url: URL_TornadoTrajectory,
-					layerId: 8,
+					url: NashvilleCokevilleTornadoTrajectory_kmzToLayer,
+					layerId: 19,
 					title: "Points",
+					legendEnabled: false,
 					labelingInfo: statesLabelClass,
 					popupTemplate: template
 				});
-
+				
 				let Polylines = new FeatureLayer({
-					url: URL_TornadoTrajectory,
-					layerId: 9,
+					url: NashvilleCokevilleTornadoTrajectory_kmzToLayer,
+					layerId: 20,
 					title: "Polylines",
-					popupTemplate: template
-				});
-				let Polygons = new FeatureLayer({
-					url: URL_TornadoTrajectory,
-					layerId: 10,
-					title: "Polygons",
+					legendEnabled: false,
 					popupTemplate: template
 				});
 
+				
 				var GroupLayer_kml = new GroupLayer({
-					title: "Dallas Tornado Trajectory",
+					title: "Nashville Tornado Trajectory",
 					visible: true,
-					// visibilityMode: "independent",
-					layers: [Polygons, Polylines, Points]
+					visibilityMode: "independent",
+					layers: [Polylines, Points]
 				});
 
+				
+				
+				//add layers to map
 				map.add(SVI_2018)
-				map.add(parcel_damage)
-				map.add(GroupLayer_kml)
+				map.add(Putnam_layer);
+				map.add(Wilson_layer);
 				map.add(blurred_survey)
+				map.add(GroupLayer_kml);
 
 				// Add BasemapGallery -------------------------------
 				const basemapGallery = new BasemapGallery({
@@ -336,14 +333,20 @@
 				// Add the expand instance to the ui
 				view.ui.add(bgExpand, "top-left");
 
-				// Add LayerList & Legend widget ----------------------
-				view.ui.add(new LayerList({
-					view: view
-				}), "bottom-right");
 
+				// Add Legend widget to the bottom left corner of the view
 				view.ui.add(new Legend({
 					view: view
 				}), "bottom-left");
+
+				view.when(function() {
+					var layerList = new LayerList({
+						view: view
+					});
+
+					// Add layerList widget to the bottom right corner of the view
+					view.ui.add(layerList, "bottom-right");
+				});
 			});
 		</script>
 	</head>
