@@ -132,8 +132,13 @@
 				})
 
 				// Damage Data
-				const parcel_damage = new FeatureLayer({
-					url: "https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/Dallas_Parcel_and_Damage2020/FeatureServer",
+				// const parcel_damage = new FeatureLayer({
+				// 	url: "https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/Dallas_Parcel_and_Damage2020/FeatureServer",
+				// 	title: "Dallas Parcel and Damage 2020",
+				// 	listMode: "hide-children"
+				// })
+				const parcel_damage = new TileLayer({
+					url: "https://tiles.arcgis.com/tiles/b3fMqPOmotX6SV4k/arcgis/rest/services/Dallas_Parcel_and_Damage2020_Tile/MapServer",
 					title: "Dallas Parcel and Damage 2020",
 					listMode: "hide-children"
 				})
