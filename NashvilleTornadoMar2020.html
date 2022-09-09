@@ -182,17 +182,15 @@
 					]
 				});
 
-				//Damage Parcel
-				let Wilson_layer = new TileLayer({
-					url: "https://tiles.arcgis.com/tiles/b3fMqPOmotX6SV4k/arcgis/rest/services/Wilson_Parcel_and_Damage_Tile/MapServer",
-					layerId: 35,
-					title:"Wilson Parcel and Damage",
+				// Damage Parcel
+				let Wilson_layer = new FeatureLayer({
+					title: 'Wilson Parcel and Damage',
+					url: 'https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/Wilson_Parcel_and_Damage/FeatureServer',
 					listMode: "hide-children"
-				});				
+				})
 				
-				let Putnam_layer = new TileLayer({
-					url: "https://tiles.arcgis.com/tiles/b3fMqPOmotX6SV4k/arcgis/rest/services/Putnam_Parcel_and_Damage_Tile/MapServer",
-					layerId: 65,
+				let Putnam_layer = new FeatureLayer({
+					url: "https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/Putnam_Parcel_and_Damage/FeatureServer",
 					title:"Putnam Parcel and Damage",
 					listMode: "hide-children"
 				});

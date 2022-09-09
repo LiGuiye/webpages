@@ -132,14 +132,11 @@
 				})
 
 				// Damage Data
-				const parcel_damage = new TileLayer({
-					// ttu
-					// url: "https://tiles.arcgis.com/tiles/4aUxCaDLaSFPHO9o/arcgis/rest/services/Dallas_Parcel_and_Damage2020_Tile/MapServer",
-					// cu boulder
-					url: "https://tiles.arcgis.com/tiles/b3fMqPOmotX6SV4k/arcgis/rest/services/Dallas_Parcel_and_Damage2020/MapServer",
+				const parcel_damage = new FeatureLayer({
+					url: "https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/Dallas_Parcel_and_Damage2020/FeatureServer",
 					title: "Dallas Parcel and Damage 2020",
 					listMode: "hide-children"
-				});
+				})
 
 				// SVI 2018 -------------------------------------
 				const sym1 = {
