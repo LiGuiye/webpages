@@ -21,10 +21,31 @@
 			width: 100%;
 		}
 
-		#container_PatientsCount_zipcode {
-			min-width: 400px;
-			/* min-height:400px; */
+		#container_plots {
+			width: 0;
 			float: right;
+		}
+
+		#container_PatientsCount_zipcode {
+			position: relative;
+			float: right;
+			height: 30%;
+			width: 100%;
+		}
+
+		#container_PatientsCount_ip,#container_PatientsCount_op {
+			position: relative;
+			float: right;
+			height: 30%;
+			width: 49.2%;
+			border-style: ridge;
+		}
+
+		#container_PatientsCount_all {
+			position: relative;
+			float: right;
+			height: 30%;
+			width: 100%;
 		}
 
 		#viewDiv {
@@ -46,8 +67,13 @@
 <body>
 	<!-- Map -->
 	<div id="viewDiv"></div>
-	<!-- Patients Count Comparison(ZipCode)-->
-	<div id="container_PatientsCount_zipcode"></div>
+	<!-- Patients Count Comparison Plots-->
+	<div id="container_plots">
+		<div id="container_PatientsCount_zipcode"></div>
+		<div id="container_PatientsCount_op"></div>
+		<div id="container_PatientsCount_ip"></div>
+		<div id="container_PatientsCount_all"></div>
+	</div>
 
 	<!-- filter -->
 	<div id="infoDiv" class="esri-widget" style="display: none">
@@ -80,6 +106,180 @@
 	</div>
 
 	<script>
+		var chart = Highcharts.chart('container_PatientsCount_ip', {
+			chart: {
+				type: 'line',
+				height: 300,
+				width: 300
+			},
+			title: {
+				text: 'Patients Count <br/> (Inpatients)',
+				style: {
+						fontSize: 10
+					}
+			},
+			// subtitle: {
+			// 	text: "Around hospitals"
+			// },
+			xAxis: {
+				categories: ['3q2017', '4q2017', '1q2018', '2q2018', '3q2018']
+			},
+			yAxis: {
+				title: {
+					text: 'Patients Count',
+					style: {
+						fontSize: 10
+					}
+				},
+				// tickPositions: [100000, 150000, 200000, 250000,
+				// 	300000, 350000, 400000, 450000, 500000, 550000,
+				// 	600000, 650000, 700000, 750000, 800000, 850000,
+				// 	900000, 950000, 1000000, 1050000, 1100000, 1150000,
+				// 	1200000, 1250000, 1300000, 1350000, 1400000, 1450000,
+				// 	1500000, 1550000, 1600000, 1650000, 1700000, 1750000,
+				// 	1800000, 1850000, 1900000, 1950000, 2000000, 2050000,
+				// 	2100000, 2150000, 2200000, 2250000, 2300000, 2350000,
+				// 	2400000, 2450000, 2500000, 2550000, 2600000, 2650000,
+				// 	2700000, 2750000, 2800000, 2850000, 2900000, 2950000,
+				// ]
+
+			},
+			plotOptions: {
+				line: {
+					dataLabels: {
+						enabled: true
+					},
+					enableMouseTracking: false
+				}
+			},
+			series: [{
+				name: 'Windswath1',
+				data: [354012, 374808, 386973, 367046, 361596]
+			}, {
+				name: 'Windswath2',
+				data: [212805, 211479, 221587, 183781, 205249]
+			}, {
+				name: 'Windswath3',
+				data: [218253, 188535, 187849, 169994, 172894]
+			}]
+		});
+		var chart = Highcharts.chart('container_PatientsCount_op', {
+			chart: {
+				type: 'line',
+				height: 300,
+				width: 300
+			},
+			title: {
+				text: 'Patients Count <br/> (Outpatients)',
+				style: {
+						fontSize: 10
+					}
+			},
+			// subtitle: {
+			// 	text: "title"
+			// },
+			xAxis: {
+				categories: ["3q2017", "4q2017", "1q2018", "2q2018", "3q2018"]
+			},
+			yAxis: {
+				title: {
+					text: 'Patients Count',
+					style: {
+						fontSize: 10
+					}
+				},
+				// tickPositions: [100000, 150000, 200000, 250000,
+				// 	300000, 350000, 400000, 450000, 500000, 550000,
+				// 	600000, 650000, 700000, 750000, 800000, 850000,
+				// 	900000, 950000, 1000000, 1050000, 1100000, 1150000,
+				// 	1200000, 1250000, 1300000, 1350000, 1400000, 1450000,
+				// 	1500000, 1550000, 1600000, 1650000, 1700000, 1750000,
+				// 	1800000, 1850000, 1900000, 1950000, 2000000, 2050000,
+				// 	2100000, 2150000, 2200000, 2250000, 2300000, 2350000,
+				// 	2400000, 2450000, 2500000, 2550000, 2600000, 2650000,
+				// 	2700000, 2750000, 2800000, 2850000, 2900000, 2950000,
+				// ]
+
+			},
+			plotOptions: {
+				line: {
+					dataLabels: {
+						enabled: true
+					},
+					enableMouseTracking: false
+				}
+			},
+			series: [{
+				name: 'Windswath1',
+				data: [2227450, 2468898, 2482563, 2349343, 2312185]
+			}, {
+				name: 'Windswath2',
+				data: [1875672, 2066829, 1938637, 1933519, 1804269]
+			}, {
+				name: 'Windswath3',
+				data: [1929642, 1994104, 1904134, 1675079, 1648692]
+			}]
+		});
+		var chart = Highcharts.chart('container_PatientsCount_all', {
+			chart: {
+				type: 'line',
+				height: 300,
+				width: 600
+				// height: 400,
+				// width: 200
+			},
+			title: {
+				text: 'Patients Count <br/> (Inpatients + Outpatients)',
+				style: {
+					fontSize: 10
+				}
+			},
+			// subtitle: {
+			// 	text: "Around hospitals"
+			// },
+			xAxis: {
+				categories: ["3q2017", "4q2017", "1q2018", "2q2018", "3q2018"]
+			},
+			yAxis: {
+				title: {
+					text: 'Patients Count',
+					style: {
+						fontSize: 10
+					}
+				},
+				// tickPositions: [100000, 150000, 200000, 250000,
+				// 	300000, 350000, 400000, 450000, 500000, 550000,
+				// 	600000, 650000, 700000, 750000, 800000, 850000,
+				// 	900000, 950000, 1000000, 1050000, 1100000, 1150000,
+				// 	1200000, 1250000, 1300000, 1350000, 1400000, 1450000,
+				// 	1500000, 1550000, 1600000, 1650000, 1700000, 1750000,
+				// 	1800000, 1850000, 1900000, 1950000, 2000000, 2050000,
+				// 	2100000, 2150000, 2200000, 2250000, 2300000, 2350000,
+				// 	2400000, 2450000, 2500000, 2550000, 2600000, 2650000,
+				// 	2700000, 2750000, 2800000, 2850000, 2900000, 2950000,
+				// ]
+
+			},
+			plotOptions: {
+				line: {
+					dataLabels: {
+						enabled: true
+					},
+					enableMouseTracking: false
+				}
+			},
+			series: [{
+				name: 'Windswath1',
+				data: [2581462, 2843706, 2869536, 2716389, 2673781]
+			}, {
+				name: 'Windswath2',
+				data: [2088477, 2278308, 2160224, 2117300, 2009518]
+			}, {
+				name: 'Windswath3',
+				data: [2147895, 2182639, 2091983, 1845073, 1821586]
+			}]
+		});
+
 		require([
 			"esri/Map",
 			"esri/views/MapView",
@@ -1278,11 +1478,8 @@
 							view.ui.add(sexFilter, "top-right");
 							view.ui.add(raceFilter, "top-right");
 							view.ui.add(ageFilter, "top-right");
-
-							document.getElementById("viewDiv").style.width = "70%"
-							document.getElementById("container_PatientsCount_zipcode").style.width = "30%"
-							document.getElementById("container_PatientsCount_zipcode").style.height = "100%"
-
+							
+							reset_plots_width()
 							// console.log(`patients count layer is turned on`);
 
 							// layer and renderer
@@ -1370,31 +1567,60 @@
 							// clear color of the last clicked feature 
 							view.graphics.removeAll();
 							// clear the Patients Count Comparison chart
-							document.getElementById('container_PatientsCount_zipcode').innerHTML = "";
-							document.getElementById("viewDiv").style.width = "100%"
-							document.getElementById("container_PatientsCount_zipcode").style.height = 0
-							document.getElementById("container_PatientsCount_zipcode").style.width = 0
-
+							// document.getElementById('container_PatientsCount_zipcode').innerHTML = "";
+							zeroing_plots_width()
 							// console.log(`patients count layer is turned off`);
 						}
 					}
 				);
 			}
 
+			function zeroing_plots_width() {
+				document.getElementById("viewDiv").style.width = "100%"
+				document.getElementById('container_plots').style.width = 0
+				document.getElementById("container_PatientsCount_zipcode").style.width = 0
+				document.getElementById("container_PatientsCount_ip").style.width = 0
+				document.getElementById("container_PatientsCount_op").style.width = 0
+				document.getElementById("container_PatientsCount_all").style.width = 0
+			}
+			function reset_plots_width() {
+				document.getElementById("viewDiv").style.width = "70%"
+				document.getElementById("container_plots").style.width = "30%"
+
+				document.getElementById("container_PatientsCount_zipcode").style.width = "100%"
+				document.getElementById("container_PatientsCount_ip").style.width = "49%"
+				document.getElementById("container_PatientsCount_op").style.width = "49%"
+				document.getElementById("container_PatientsCount_all").style.width = "100%"
+			}
+
 			// load HighCharts when click patients count layer
 			function loadChart_PatientsCount_zipcode(zip_code, x_data, y_data) {
 				var chart = Highcharts.chart('container_PatientsCount_zipcode', {
 					chart: {
-						type: 'line'
+						type: 'line',
+						height: 400,
+						width: 600
 					},
 					title: {
-						text: 'Patients Count under the Filter in Zip Code: ' + zip_code
+						text: 'Patients Count under given Filter'
 					},
 					subtitle: {
-						text: subtitle
+						text: 'Zip Code: ' + zip_code
 					},
 					xAxis: {
-						categories: x_data
+						categories: x_data,
+						plotLines: [{
+							color: 'red',
+							width: 2,
+							value: 6,
+							// zIndex: 5
+							label:{
+								text: "Hurricane Harvey",
+								verticalAlign: 'top',
+								textAlign: 'left',
+								rotation: 0
+							}
+						}]
 					},
 					yAxis: {
 						title: {
