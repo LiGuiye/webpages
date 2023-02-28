@@ -352,12 +352,20 @@
 				basemap: "topo-vector"
 			});
 
+			const home_center = [-95.3, 29.8]
+			const home_zoom = 7
 			const view = new MapView({
 				container: "viewDiv",
 				map: map,
-				center: [-95.3, 29.8], // longitude, latitude
-				zoom: 7
+				center: home_center, // longitude, latitude
+				zoom: home_zoom
 			});
+			function view_go_home() {
+				view.goTo({
+					center: home_center,
+					zoom: home_zoom
+				});
+			}
 
 			// Layers
 			// ----------------------------------------- patients count -----------------------------------------
@@ -546,6 +554,18 @@
 				// popupEnabled: false
 			});
 
+			reactiveUtils.watch(
+				() => layer_hospital.visible,
+				(visible) => {
+					if (visible) {
+						view.goTo({
+							center: [-99, 31],
+							zoom: home_zoom - 1
+						});
+					} else {
+						view_go_home()
+					}
+				});
 			// ----------------------------------------- Hurricane Harvey Trajectory -----------------------------------------
 			const url_HurricaneHarvey = "https://services2.arcgis.com/4aUxCaDLaSFPHO9o/arcgis/rest/services/NHC_NOAA_Harvey_best_track/FeatureServer";
 			var layer_HurricaneHarvey_floodmap = new TileLayer({
@@ -652,6 +672,15 @@
 				layers: [layer_HurricaneHarvey_floodmap, layer_HurricaneHarvey_windswath, layer_HurricaneHarvey_lines, layer_HurricaneHarvey_points]
 			})
 
+			reactiveUtils.watch(
+				() => hurricane_harvey_trajectory.visible,
+				(visible) => {
+					if (visible) {
+						view_go_home()
+					} else {
+						view_go_home()
+					}
+				});
 			// ----------------------------------------- SVI 2018 -----------------------------------------
 			const sym1 = {
 				type: "simple-fill",
@@ -774,7 +803,18 @@
 				]
 			});
 
-
+			reactiveUtils.watch(
+				() => SVI_2018.visible,
+				(visible) => {
+					if (visible) {
+						view.goTo({
+							center: [-99, 31],
+							zoom: home_zoom - 1
+						});
+					} else {
+						view_go_home()
+					}
+				});
 			// ----------------------------------------- Harris damage -----------------------------------------
 			const layer_HCADParcels2017 = new TileLayer({
 				url: "https://tiles.arcgis.com/tiles/b3fMqPOmotX6SV4k/arcgis/rest/services/HCAD_Parcels_2017/MapServer",
@@ -797,6 +837,18 @@
 				// opacity: 0.75
 			});
 
+			reactiveUtils.watch(
+				() => harrisGroupLayer.visible,
+				(visible) => {
+					if (visible) {
+						view.goTo({
+							center: home_center,
+							zoom: home_zoom + 3
+						});
+					} else {
+						view_go_home()
+					}
+				});
 			// ----------------------------------------- NOAA Harvey Imagery -----------------------------------------
 			const aug27a_ob = new WMTSLayer({
 				url: "https://storms.ngs.noaa.gov/storms/tilesd/services/tileserver.php/wmts",
@@ -915,6 +967,21 @@
 				]
 			});
 
+			reactiveUtils.watch(
+				() => NOAA_harvey_imagery.visible,
+				(visible) => {
+					if (visible) {
+						view.goTo({
+							center: home_center,
+							zoom: home_zoom + 1
+						});
+					} else {
+						view.goTo({
+							center: home_center,
+							zoom: home_zoom
+						});
+					}
+				});
 			// ----------------------------------------- MAXAR Hurricane Harvey Imagery -----------------------------------------
 			const pre_event = new TileLayer({
 				url: "https://tiles.arcgis.com/tiles/b3fMqPOmotX6SV4k/arcgis/rest/services/Harris_pre_event/MapServer",
@@ -948,11 +1015,12 @@
 						// add the widget to the view
 						view.ui.add(swipe);
 						view.goTo({
-							center: [-95.3, 29.8],
-							zoom: 9
+							center: home_center,
+							zoom: home_zoom + 3
 						});
 					} else {
 						view.ui.remove(swipe);
+						view_go_home()
 					}
 				});
 
@@ -1183,6 +1251,18 @@
 				listMode: 'hide-children'
 			})
 
+			reactiveUtils.watch(
+				() => twitter_windswath_2017_08_26.visible,
+				(visible) => {
+					if (visible) {
+						view.goTo({
+							center: [-99, 31],
+							zoom: home_zoom - 1
+						});
+					} else {
+						view_go_home()
+					}
+				});
 			// const twitter_texas_2017_08_26 = new FeatureLayer({
 			// 	title: 'Tweets Texas',
 			// 	visible: false,
@@ -1220,24 +1300,22 @@
 			// 	url: 'https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/2017_09_01_stream_texas/FeatureServer/0'
 			// })
 
-			//add layers to map
+			// ----------------------------------------- add previous layers to map -----------------------------------------
 			map.add(NOAA_harvey_imagery)
 			map.add(MAXAR)
 			map.add(SVI_2018)
-			map.add(hurricane_harvey_trajectory)
 			map.add(harrisGroupLayer)
 			map.layers.push(
 				view_patientscount1q2016, view_patientscount2q2016, view_patientscount3q2016, view_patientscount4q2016,
 				view_patientscount1q2017, view_patientscount2q2017, view_patientscount3q2017, view_patientscount4q2017,
 				view_patientscount1q2018, view_patientscount2q2018, view_patientscount3q2018, view_patientscount4q2018,
 				view_patientscount1q2019, view_patientscount2q2019);
+			map.add(hurricane_harvey_trajectory)
 			map.add(layer_hospital)
 			// map.add(twitter_texas_2017_08_26)
 			map.add(twitter_windswath_2017_08_26)
 
-			
-
-			// Add BasemapGallery -------------------------------
+			// ----------------------------------------- Add Basemap Gallery -----------------------------------------
 			const basemapGallery = new BasemapGallery({
 				view: view,
 				container: document.createElement("div")
@@ -1253,7 +1331,7 @@
 			// Add the expand instance to the ui
 			view.ui.add(bgExpand, "top-left");
 
-			// Add LayerList & Legend widget ----------------------
+			// ----------------------------------------- Add LayerList & Legend widget -----------------------------------------
 			view.ui.add(new LayerList({
 				view: view
 			}), "bottom-right");
@@ -1262,7 +1340,8 @@
 				view: view
 			}), "bottom-left");
 
-			// time slider widget initialization
+			// ----------------------------------------- Add time slider for tweet data -----------------------------------------
+			// widget initialization
 			const timeSlider_windswath = new TimeSlider({
 				container: "timeSliderDiv_windswath",
 				view: view,
@@ -1312,6 +1391,10 @@
 				(visible) => {
 					if (visible) {
 						view.ui.add(timeSlider_windswath, "bottom-left");
+						view.goTo({
+							center: home_center,
+							zoom: home_zoom
+						});
 					} else {
 						view.ui.remove(timeSlider_windswath);
 					}
@@ -1355,6 +1438,10 @@
 					(visible) => {
 						if (visible) {
 							view.ui.add(timeSlider_windswath, "bottom-left");
+							view.goTo({
+								center: home_center,
+								zoom: home_zoom
+							});
 						} else {
 							view.ui.remove(timeSlider_windswath);
 						}
@@ -1395,7 +1482,7 @@
 
 			// })
 
-			// filters -----------------------
+			// ----------------------------------------- Add filters and charts for Patients count -----------------------
 			let numClassesInput, slider;
 			var patientstypeFilter, sexFilter, raceFilter, ageFilter;
 			var fieldName1, fieldName2;
@@ -1498,7 +1585,6 @@
 				ageFilter.appendChild(option);
 			});
 
-
 			// default layer for patientscount
 			var show_layer = view_patientscount1q2016;
 			controlUI_addListener(show_layer)
@@ -1518,6 +1604,11 @@
 
 							reset_plots_width()
 							// console.log(`patients count layer is turned on`);
+
+							view.goTo({
+								center: [-100, 30],
+								zoom: home_zoom - 1
+							});
 
 							// layer and renderer
 							timeSelect = document.getElementById("time-select");
@@ -1609,6 +1700,10 @@
 							// document.getElementById('container_PatientsCount_zipcode').innerHTML = "";
 							zeroing_plots_width()
 							// console.log(`patients count layer is turned off`);
+							view.goTo({
+								center: home_center,
+								zoom: home_zoom
+							});
 						}
 					}
 				);
