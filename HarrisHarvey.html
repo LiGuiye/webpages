@@ -360,7 +360,7 @@
 			});
 
 			// Layers
-			// patients count -----------------------------------------
+			// ----------------------------------------- patients count -----------------------------------------
 			const url_patientscount = "https://services2.arcgis.com/4aUxCaDLaSFPHO9o/arcgis/rest/services/view_patientscount/FeatureServer";
 			var view_patientscount1q2016 = new FeatureLayer({
 				id: "view_patientscount1q2016",
@@ -504,7 +504,7 @@
 				listMode: "hide"
 			});
 
-			// ------------------------------------------------ hospitals in texas  ------------------------------------------------
+			// ----------------------------------------- hospitals in texas -----------------------------------------
 			var layer_hospital = new FeatureLayer({
 				id: "hospital",
 				title: "Texas Hospitals",
@@ -546,7 +546,7 @@
 				// popupEnabled: false
 			});
 
-			// Hurricane Harvey Trajectory
+			// ----------------------------------------- Hurricane Harvey Trajectory -----------------------------------------
 			const url_HurricaneHarvey = "https://services2.arcgis.com/4aUxCaDLaSFPHO9o/arcgis/rest/services/NHC_NOAA_Harvey_best_track/FeatureServer";
 			var layer_HurricaneHarvey_floodmap = new TileLayer({
 				id: "HurricaneHarvey_floodmap",
@@ -554,13 +554,13 @@
 				title: "Flood map",
 				// opacity: 0,
 				visible: false,
-				legendEnabled: false,
+				// legendEnabled: false,
 				listMode: "hide-children"
 			});
 			var layer_HurricaneHarvey_points = new FeatureLayer({
 				id: "HurricaneHarvey_points",
 				url: url_HurricaneHarvey,
-				title: "Points",
+				title: "Track points",
 				outFields: ["*"],
 				layerId: 0,
 				// opacity: 0,
@@ -571,16 +571,16 @@
 					content: [{
 						type: "fields", // FieldsContentElement
 						fieldInfos: [{
-							fieldName: "DTG", label: "Date-Time, UTC"
+							fieldName: "DTG", label: "Date (UTC)"
 						},
 						{
-							fieldName: "STORMTYPE", label: "STORM TYPE"
+							fieldName: "STORMTYPE", label: "Storm type"
 						},
 						{
-							fieldName: "INTENSITY", label: "Intensity, mph"
+							fieldName: "INTENSITY", label: "Intensity (mph)"
 						},
 						{
-							fieldName: "SS", label: "Severity Index (0-4)"
+							fieldName: "SS", label: "Severity index (0-4)"
 						},
 						{
 							fieldName: "LAT", label: "Latitude"
@@ -590,44 +590,44 @@
 						}]
 					}]
 				},
-				popupEnabled: false
+				// popupEnabled: false
 			});
 			var layer_HurricaneHarvey_lines = new FeatureLayer({
 				id: "HurricaneHarvey_lines",
 				url: url_HurricaneHarvey,
-				title: "Lines",
+				title: "Track lines",
 				outFields: ["*"],
 				layerId: 1,
 				// opacity: 0,
 				// legendEnabled: false,
 				popupTemplate: {
 					// autocasts as new PopupTemplate()
-					title: "Harvey Track",
+					title: "HARVEY Track line",
 					content: [{
 						type: "fields", // FieldsContentElement
 						fieldInfos: [
 							{
-								fieldName: "STORMTYPE", label: "STORM TYPE"
+								fieldName: "STORMTYPE", label: "Storm type"
 							},
 							{
-								fieldName: "SS", label: "Storm Severity Code"
+								fieldName: "SS", label: "Storm severity code"
 							}
 						]
 					}]
 				},
-				popupEnabled: false
+				// popupEnabled: false
 			});
 			var layer_HurricaneHarvey_windswath = new FeatureLayer({
 				id: "HurricaneHarvey_windswath",
 				url: url_HurricaneHarvey,
-				title: "Windswath",
+				title: "Track windswath",
 				outFields: ["*"],
 				layerId: 2,
 				visible: true,
 				// opacity: 0,
 				// legendEnabled: false,
 				popupTemplate: {
-					title: "Harvey Windswath Extent",
+					title: "HARVEY Track windswath Extent",
 					content: [{
 						type: "fields", // FieldsContentElement
 						fieldInfos: [
@@ -635,15 +635,15 @@
 								fieldName: "RADII", label: "Radii"
 							},
 							{
-								fieldName: "STARTDTG", label: "Start Date-Time, UTC"
+								fieldName: "STARTDTG", label: "Start Date-Time (UTC)"
 							},
 							{
-								fieldName: "ENDDTG", label: "End Date-Time, UTC"
+								fieldName: "ENDDTG", label: "End Date-Time (UTC)"
 							}
 						]
 					}]
 				},
-				popupEnabled: false
+				// popupEnabled: false
 			});
 
 			const hurricane_harvey_trajectory = new GroupLayer({
