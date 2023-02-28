@@ -627,7 +627,7 @@
 				// opacity: 0,
 				// legendEnabled: false,
 				popupTemplate: {
-					title: "HARVEY Track windswath Extent",
+					title: "HARVEY Track windswath extent",
 					content: [{
 						type: "fields", // FieldsContentElement
 						fieldInfos: [
@@ -652,7 +652,7 @@
 				layers: [layer_HurricaneHarvey_floodmap, layer_HurricaneHarvey_windswath, layer_HurricaneHarvey_lines, layer_HurricaneHarvey_points]
 			})
 
-			// SVI 2018 -------------------------------------
+			// ----------------------------------------- SVI 2018 -----------------------------------------
 			const sym1 = {
 				type: "simple-fill",
 				color: "#E6EECF",
@@ -766,7 +766,7 @@
 			});
 
 			const SVI_2018 = new GroupLayer({
-				title: "CDC Social Vulnerability Index",
+				title: "CDC SVI 2018",
 				visible: false,
 				visibilityMode: "exclusive",
 				layers: [
@@ -775,26 +775,29 @@
 			});
 
 
-			// Harris damage -------------------------------------
+			// ----------------------------------------- Harris damage -----------------------------------------
 			const layer_HCADParcels2017 = new TileLayer({
 				url: "https://tiles.arcgis.com/tiles/b3fMqPOmotX6SV4k/arcgis/rest/services/HCAD_Parcels_2017/MapServer",
-				listMode: "hide-children"
+				listMode: "hide-children",
+				title: "Parcels"
 				// legendEnabled : false
 			});
 			const layer_HCADCommercialDamaged = new FeatureLayer({
-				url: "https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/Harris/FeatureServer/48"
+				url: "https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/Harris/FeatureServer/48",
+				title: "Commercial damaged"
 			});
 			const layer_HCADResidentialDamaged = new FeatureLayer({
-				url: "https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/Harris/FeatureServer/49"
+				url: "https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/Harris/FeatureServer/49",
+				title: "Residential damaged"
 			});
 			const harrisGroupLayer = new GroupLayer({
-				title: "Harris Damage Layers",
+				title: "Damage in Harris county",
 				visible: false,
 				layers: [layer_HCADResidentialDamaged, layer_HCADCommercialDamaged, layer_HCADParcels2017],
 				// opacity: 0.75
 			});
 
-			// NOAA Harvey Imagery
+			// ----------------------------------------- NOAA Harvey Imagery -----------------------------------------
 			const aug27a_ob = new WMTSLayer({
 				url: "https://storms.ngs.noaa.gov/storms/tilesd/services/tileserver.php/wmts",
 				activeLayer: {
@@ -821,14 +824,14 @@
 				activeLayer: {
 					id: "20170829a-rgb"
 				},
-				title: "August 29 2017 oblique"
+				title: "August 29 2017 Oblique"
 			});
 			const aug29b_ob = new WMTSLayer({
 				url: "https://storms.ngs.noaa.gov/storms/tilesd/services/tileserver.php/wmts",
 				activeLayer: {
 					id: "20170829b-rgb"
 				},
-				title: "August 29 2017 nadir"
+				title: "August 29 2017 Nadir"
 			});
 			const aug30a_ob = new WMTSLayer({
 				url: "https://storms.ngs.noaa.gov/storms/tilesd/services/tileserver.php/wmts",
@@ -903,7 +906,7 @@
 				title: "September 03 2017"
 			});
 			const NOAA_harvey_imagery = new GroupLayer({
-				title: "NOAA Hurricane Harvey Imagery",
+				title: "NOAA Imagery",
 				visible: false,
 				layers: [
 					sept03a_ob, sept02c_ob, sept02b_ob, sept02a_ob, sept01c_ob, sept01b_ob, sept01a_ob,
@@ -912,25 +915,48 @@
 				]
 			});
 
-			// MAXAR Hurricane Harvey Imagery
+			// ----------------------------------------- MAXAR Hurricane Harvey Imagery -----------------------------------------
 			const pre_event = new TileLayer({
 				url: "https://tiles.arcgis.com/tiles/b3fMqPOmotX6SV4k/arcgis/rest/services/Harris_pre_event/MapServer",
-				title: "pre-event",
+				title: "Pre-event",
 				listMode: "hide-children"
 			})
 
 			const post_event = new TileLayer({
 				url: "https://tiles.arcgis.com/tiles/b3fMqPOmotX6SV4k/arcgis/rest/services/Harris_post_event/MapServer",
-				title: "post-event",
+				title: "Post-event",
 				listMode: "hide-children"
 			})
 			const MAXAR = new GroupLayer({
-				title: "MAXAR Hurricane Harvey Imagery",
+				title: "MAXAR Imagery",
 				visible: false,
 				layers: [post_event, pre_event]
 			});
 
-			// Tweets
+			// create a new Swipe widget for MAXAR Imagery
+			const swipe = new Swipe({
+				leadingLayers: [pre_event],
+				trailingLayers: [post_event],
+				position: 20,
+				view: view
+			});
+
+			reactiveUtils.watch(
+				() => MAXAR.visible,
+				(visible) => {
+					if (visible) {
+						// add the widget to the view
+						view.ui.add(swipe);
+						view.goTo({
+							center: [-95.3, 29.8],
+							zoom: 9
+						});
+					} else {
+						view.ui.remove(swipe);
+					}
+				});
+
+			// ----------------------------------------- Tweets -----------------------------------------
 			let windswath1_Renderer = {
 				type: "simple",  // autocasts as new SimpleRenderer()
 				symbol: {
@@ -946,13 +972,14 @@
 
 			const popupTemplate = {
 				content: [{
+					title: "Tweet",
 					type: "fields", // FieldsContentElement
 					fieldInfos: [
 						{
-							fieldName: "date", label: "date"
+							fieldName: "date", label: "Date"
 						},
 						{
-							fieldName: "content", label: "content"
+							fieldName: "content", label: "Content"
 						}
 					]
 				}]
@@ -977,7 +1004,7 @@
 				url: 'https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/2017_08_26_stream_windswath3/FeatureServer/0'
 			})
 			const twitter_windswath_2017_08_26 = new GroupLayer({
-				title: 'Tweets wind swath',
+				title: 'Tweets within windswath extent',
 				visible: false,
 				legendEnabled: false,
 				layers: [
@@ -1006,7 +1033,7 @@
 				url: 'https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/2017_08_27_stream_windswath3/FeatureServer/0'
 			})
 			const twitter_windswath_2017_08_27 = new GroupLayer({
-				title: 'Tweets wind swath',
+				title: 'Tweets within windswath extent',
 				legendEnabled: false,
 				layers: [
 					twitter_windswath1_2017_08_27,
@@ -1034,7 +1061,7 @@
 				url: 'https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/2017_08_28_stream_windswath3/FeatureServer/0'
 			})
 			const twitter_windswath_2017_08_28 = new GroupLayer({
-				title: 'Tweets wind swath',
+				title: 'Tweets within windswath extent',
 				legendEnabled: false,
 				layers: [
 					twitter_windswath1_2017_08_28,
@@ -1062,7 +1089,7 @@
 				url: 'https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/2017_08_29_stream_windswath3/FeatureServer/0'
 			})
 			const twitter_windswath_2017_08_29 = new GroupLayer({
-				title: 'Tweets wind swath',
+				title: 'Tweets within windswath extent',
 				legendEnabled: false,
 				layers: [
 					twitter_windswath1_2017_08_29,
@@ -1090,7 +1117,7 @@
 				url: 'https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/2017_08_30_stream_windswath3/FeatureServer/0'
 			})
 			const twitter_windswath_2017_08_30 = new GroupLayer({
-				title: 'Tweets wind swath',
+				title: 'Tweets within windswath extent',
 				legendEnabled: false,
 				layers: [
 					twitter_windswath1_2017_08_30,
@@ -1118,7 +1145,7 @@
 				url: 'https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/2017_08_31_stream_windswath3/FeatureServer/0'
 			})
 			const twitter_windswath_2017_08_31 = new GroupLayer({
-				title: 'Tweets wind swath',
+				title: 'Tweets within windswath extent',
 				legendEnabled: false,
 				layers: [
 					twitter_windswath1_2017_08_31,
@@ -1146,7 +1173,7 @@
 				url: 'https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/2017_09_01_stream_windswath3/FeatureServer/0'
 			})
 			const twitter_windswath_2017_09_01 = new GroupLayer({
-				title: 'Tweets wind swath',
+				title: 'Tweets within windswath extent',
 				legendEnabled: false,
 				layers: [
 					twitter_windswath1_2017_09_01,
@@ -1197,35 +1224,18 @@
 			map.add(NOAA_harvey_imagery)
 			map.add(MAXAR)
 			map.add(SVI_2018)
+			map.add(hurricane_harvey_trajectory)
+			map.add(harrisGroupLayer)
 			map.layers.push(
 				view_patientscount1q2016, view_patientscount2q2016, view_patientscount3q2016, view_patientscount4q2016,
 				view_patientscount1q2017, view_patientscount2q2017, view_patientscount3q2017, view_patientscount4q2017,
 				view_patientscount1q2018, view_patientscount2q2018, view_patientscount3q2018, view_patientscount4q2018,
 				view_patientscount1q2019, view_patientscount2q2019);
-			map.add(harrisGroupLayer)
-			map.add(hurricane_harvey_trajectory)
 			map.add(layer_hospital)
 			// map.add(twitter_texas_2017_08_26)
 			map.add(twitter_windswath_2017_08_26)
 
-			// create a new Swipe widget for MAXAR Imagery
-			const swipe = new Swipe({
-				leadingLayers: [pre_event],
-				trailingLayers: [post_event],
-				position: 20,
-				view: view
-			});
-
-			reactiveUtils.watch(
-				() => MAXAR.visible,
-				(visible) => {
-					if (visible) {
-						// add the widget to the view
-						view.ui.add(swipe);
-					} else {
-						view.ui.remove(swipe);
-					}
-				});
+			
 
 			// Add BasemapGallery -------------------------------
 			const basemapGallery = new BasemapGallery({
