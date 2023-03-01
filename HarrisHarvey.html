@@ -52,12 +52,22 @@
 			font-family: Avenir Next W00;
 			font-size: 1em;
 		}
+
+		#titleDiv {
+			padding: 10px;
+			width: 320px;
+		}
 	</style>
 </head>
 
 <body>
 	<!-- Map -->
+	<div id="titleDiv" class="esri-widget">
+		<div id="titleText">Title</div>
+		<div>Introduction</div>
+	</div>
 	<div id="viewDiv"></div>
+
 	<!-- Patients Count Comparison Plots-->
 	<div id="container_plots">
 		<div id="container_PatientsCount_zipcode"></div>
@@ -325,7 +335,8 @@
 			"esri/smartMapping/renderers/color",
 			"esri/smartMapping/statistics/histogram",
 			"esri/widgets/smartMapping/ClassedColorSlider",
-			"esri/widgets/TimeSlider"
+			"esri/widgets/TimeSlider",
+			"esri/widgets/Home"
 		], function (
 			Map,
 			MapView,
@@ -344,7 +355,8 @@
 			colorRendererCreator,
 			histogram,
 			ClassedColorSlider,
-			TimeSlider
+			TimeSlider,
+			Home
 		) {
 			var infoDiv = document.getElementById("infoDiv")
 
@@ -360,6 +372,15 @@
 				center: home_center, // longitude, latitude
 				zoom: home_zoom
 			});
+
+			view.ui.add("titleDiv", "top-right");
+
+			// Add the home button to the top left corner of the view
+			const homeBtn = new Home({
+				view: view
+			});
+			view.ui.add(homeBtn, "top-left");
+
 			function view_go_home() {
 				view.goTo({
 					center: home_center,
@@ -1004,7 +1025,7 @@
 			const swipe = new Swipe({
 				leadingLayers: [pre_event],
 				trailingLayers: [post_event],
-				position: 20,
+				position: 50,
 				view: view
 			});
 
@@ -1072,7 +1093,7 @@
 				url: 'https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/2017_08_26_stream_windswath3/FeatureServer/0'
 			})
 			const twitter_windswath_2017_08_26 = new GroupLayer({
-				title: 'Tweets within windswath extent',
+				title: 'Tweets within windswath',
 				visible: false,
 				legendEnabled: false,
 				layers: [
@@ -1101,7 +1122,7 @@
 				url: 'https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/2017_08_27_stream_windswath3/FeatureServer/0'
 			})
 			const twitter_windswath_2017_08_27 = new GroupLayer({
-				title: 'Tweets within windswath extent',
+				title: 'Tweets within windswath',
 				legendEnabled: false,
 				layers: [
 					twitter_windswath1_2017_08_27,
@@ -1129,7 +1150,7 @@
 				url: 'https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/2017_08_28_stream_windswath3/FeatureServer/0'
 			})
 			const twitter_windswath_2017_08_28 = new GroupLayer({
-				title: 'Tweets within windswath extent',
+				title: 'Tweets within windswath',
 				legendEnabled: false,
 				layers: [
 					twitter_windswath1_2017_08_28,
@@ -1157,7 +1178,7 @@
 				url: 'https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/2017_08_29_stream_windswath3/FeatureServer/0'
 			})
 			const twitter_windswath_2017_08_29 = new GroupLayer({
-				title: 'Tweets within windswath extent',
+				title: 'Tweets within windswath',
 				legendEnabled: false,
 				layers: [
 					twitter_windswath1_2017_08_29,
@@ -1185,7 +1206,7 @@
 				url: 'https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/2017_08_30_stream_windswath3/FeatureServer/0'
 			})
 			const twitter_windswath_2017_08_30 = new GroupLayer({
-				title: 'Tweets within windswath extent',
+				title: 'Tweets within windswath',
 				legendEnabled: false,
 				layers: [
 					twitter_windswath1_2017_08_30,
@@ -1213,7 +1234,7 @@
 				url: 'https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/2017_08_31_stream_windswath3/FeatureServer/0'
 			})
 			const twitter_windswath_2017_08_31 = new GroupLayer({
-				title: 'Tweets within windswath extent',
+				title: 'Tweets within windswath',
 				legendEnabled: false,
 				layers: [
 					twitter_windswath1_2017_08_31,
@@ -1241,7 +1262,7 @@
 				url: 'https://services.arcgis.com/b3fMqPOmotX6SV4k/arcgis/rest/services/2017_09_01_stream_windswath3/FeatureServer/0'
 			})
 			const twitter_windswath_2017_09_01 = new GroupLayer({
-				title: 'Tweets within windswath extent',
+				title: 'Tweets within windswath',
 				legendEnabled: false,
 				layers: [
 					twitter_windswath1_2017_09_01,
